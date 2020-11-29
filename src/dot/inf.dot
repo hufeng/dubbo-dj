@@ -1,0 +1,15 @@
+{{=it.mott}}
+
+{{~it.imports:i}}
+{{=i}}
+{{~}}
+
+{{="\n"}}
+
+export interface {{=it.infName}} {
+  {{~it.fields:f }}
+    {{=f.comment}}
+    {{=f.name}}:{{=f.type.tsType}};
+    {{="\n"}}
+  {{~}}
+}

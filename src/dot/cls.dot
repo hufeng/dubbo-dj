@@ -1,0 +1,33 @@
+{{=it.mott}}
+
+{{~it.imports: i}}
+{{=i}}
+{{~}}
+
+{{="\n"}}
+
+export default class {{=it.clsName}} {
+
+  {{~it.fields:field}}
+    {{=field.comment}}
+    {{=field.name}}:{{=field.type.tsType}};
+    {{="\n"}}
+  {{~}}
+  {{="\n"}}
+
+  constructor(props: {{=it.infName}}) {
+    {{~it.fields:field}}
+      this.{{=field.name}} = props.{{=field.name}};
+    {{~}}
+  }
+
+  {{="\n\n"}}
+
+  __fields2Java() {
+    java('{{=it.cls}}', {
+      {{~it.fields:field}}
+      {{=field.name}}:{{=field.type.javaType}},
+      {{~}}
+    })
+  }
+}

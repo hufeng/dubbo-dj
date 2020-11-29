@@ -1,0 +1,11 @@
+{{=it.mott}}
+
+export default class {{=it.serviceName}} {
+  dubboInterface = '{{=it.service}}';
+  group = '{{=it.group}}';
+  version = '{{=it.version}}';
+
+  {{~it.methods:method}}
+  {{=method}}
+  {{~}}
+}
