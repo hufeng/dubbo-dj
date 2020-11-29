@@ -52,7 +52,7 @@ class Service extends Base {
     return this
   }
 
-  arg(name: string, type: () => IType | Model) {
+  arg(name: string, type: Model | (() => IType)) {
     const method = this._methods[this._curMethodName]
     if (type instanceof Model) {
       const renameClsName = this.deps.add(this.cls2Path(type.cls), type.clsName)
@@ -98,6 +98,7 @@ class Service extends Base {
 
     return dotService({
       mott: this.mott,
+      imports: this.deps.imports,
       service: this.inf,
       serviceName: this._serviceName,
       group: this._group,

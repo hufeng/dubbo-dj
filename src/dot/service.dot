@@ -1,5 +1,8 @@
 {{=it.mott}}
 
+{{=it.imports}}
+{{="\n"}}
+
 export default class {{=it.serviceName}} {
   dubboInterface = '{{=it.service}}';
   group = '{{=it.group}}';
