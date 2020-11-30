@@ -1,12 +1,15 @@
-import fmt from '../fmt'
-import java from '../'
+import fmt from '../emitter/fmt'
+import java from '../core'
+import { Service } from '../emitter'
+import { userService } from '../../cmd/dsl/service'
 
 const user = java
-  .model('org.apache.dubbo.domain.User')
+  .Clazz('org.apache.dubbo.domain.User')
   .field('id', java.Integer)
+  .ok()
 
 const UserService = java
-  .service('org.apache.dubbo.service.UserService')
+  .Service('org.apache.dubbo.service.UserService')
   .group('A')
   .version('1.0.0')
   .method('sayHello')
@@ -16,8 +19,9 @@ const UserService = java
   .method('sayHi')
   .arg('i', java.Integer)
   .ret(java.String)
+  .ok()
 
 it('test java service', () => {
   expect(JSON.stringify(UserService, null, 2)).toMatchSnapshot()
-  expect(fmt(UserService.serviceCode)).toMatchSnapshot()
+  expect(new Service(userService, 'ts').pretteyCode).toMatchSnapshot()
 })

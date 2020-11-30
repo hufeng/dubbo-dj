@@ -1,0 +1,11 @@
+{{=it.mott}}
+
+{{="\n\n"}}
+
+export enum {{=it.name}} {
+  {{~it.fields:f}}
+  {{=f.comment}}
+  {{=f.name}}={{=JSON.stringify(f.val)}},
+  {{="\n"}}
+  {{~}}
+}

@@ -1,3 +1,8 @@
+import path from 'path'
+import debug from 'debug'
+
+const log = debug(`dubbo:dj:dep:say ~`)
+
 type fullClassName = string
 type clsName = string
 
@@ -8,28 +13,31 @@ export interface ICount {
   }
 }
 
+/**
+ * collect deps
+ */
 export default class Deps {
   private map: Map<string, ICount> = new Map()
 
-  add(fullClssName: string, clsName: string) {
+  add(fullClsName: string, clsName: string) {
     let val = this.map.get(clsName)
 
     if (val) {
       // 如果已经存在
-      const existClsName = val.map[fullClssName]
+      const existClsName = val.map[fullClsName]
       if (existClsName) {
         return existClsName
       }
 
       // 不存在
       const renameClsName = `${clsName}${val.offset}`
-      val.map[fullClssName] = renameClsName
+      val.map[fullClsName] = renameClsName
       val.offset++
       return renameClsName
     } else {
       this.map.set(clsName, {
         offset: 1,
-        map: { [fullClssName]: clsName },
+        map: { [fullClsName]: clsName },
       })
     }
 
@@ -40,9 +48,11 @@ export default class Deps {
     const imports = []
     for (let { map } of this.map.values()) {
       for (let [fullClassName, clsName] of Object.entries(map)) {
-        imports.push(`
-        import ${clsName} from '${fullClassName}';
-        `)
+        // imports.push(`import ${clsName} from '${fullClassName}';`)
+        imports.push({
+          fullClassName,
+          importName: clsName,
+        })
       }
     }
     return imports

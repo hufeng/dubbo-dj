@@ -1,0 +1,17 @@
+{{=it.mott}}
+
+{{="\n\n"}}
+{{=it.imports}}
+{{="\n\n"}}
+
+export default abstract class {{=it.serviceName}} {
+  dubboInterface = '{{=it.service}}';
+  group = '{{=it.group}}';
+  version = '{{=it.version}}';
+
+  {{="\n\n"}}
+  
+  {{~it.methods:method}}
+  {{=method}}
+  {{~}}
+}

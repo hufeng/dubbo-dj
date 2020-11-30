@@ -1,5 +1,9 @@
 import p from 'prettier'
 
+/**
+ * format generate code
+ * @param str
+ */
 export default function fmt(str: string) {
   return p.format(str, {
     trailingComma: 'es5',

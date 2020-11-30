@@ -1,10 +1,20 @@
 {{=it.mott}}
 
-{{~it.imports: i}}
-{{=i}}
-{{~}}
+{{="\n\n"}}
 
-{{="\n"}}
+{{=it.imports}}
+
+{{="\n\n"}}
+
+export interface {{=it.infName}} {
+  {{~it.fields:f}}
+    {{=f.comment}}
+    {{=f.name}}:{{=f.type.tsType}};
+    {{="\n"}}
+  {{~}}
+}
+
+{{="\n\n"}}
 
 export default class {{=it.clsName}} {
 
@@ -23,7 +33,7 @@ export default class {{=it.clsName}} {
 
   {{="\n\n"}}
 
-  __fields2Java() {
+  __fields2java() {
     java('{{=it.cls}}', {
       {{~it.fields:field}}
       {{=field.name}}:{{=field.type.javaType}},
