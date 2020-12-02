@@ -93,7 +93,7 @@ export const userService = dl
   log(`create service file [%s]`, `${langdir}/package.json`)
   await fsx
     .writeFile(
-      `${langdir}/index.ts`,
+      `${langdir}/package.json`,
       `
         {"dependencies": {"@dubbo/dj": "^1.0.0"}
       `

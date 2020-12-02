@@ -2,7 +2,6 @@
   "private": true,
   "name": "@dubbo/dj",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "git@github.com:hufeng/dj.git",
   "author": "hufeng <fengmi99@gmail.com>",
   "license": "MIT",
