@@ -2,8 +2,8 @@ import path from 'path'
 
 import debug from 'debug'
 import fsx from 'fs-extra'
-import fmt from './fmt'
 import Deps from '../dlang/deps'
+import { fmt } from './fmt'
 
 const log = debug(`dubbo:dj:emitter/BaseClazz：say ~`)
 const relWhiteList = ['js-to-java', '@dubbo/dj-suger']

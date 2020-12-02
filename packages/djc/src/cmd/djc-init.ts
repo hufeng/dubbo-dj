@@ -2,6 +2,7 @@ import fsx from 'fs-extra'
 import inrequirer from 'inquirer'
 import debug from 'debug'
 import { fmt } from '../emitter'
+import { fmtJSON } from '../emitter/fmt'
 
 const log = debug(`dubbo:dj:say ~`)
 
@@ -94,9 +95,15 @@ export const userService = dl
   await fsx
     .writeFile(
       `${langdir}/package.json`,
-      `
-        {"dependencies": {"@dubbo/dj": "^1.0.0"}
-      `
+      fmtJSON(`{
+        "name": "dubbo-dsl",
+        "version": "1.0.0",
+        "main": "index.js",
+        "license": "MIT",
+        "dependencies": {
+          "@dubbo/dj": "^1.0.0"
+        }
+      }`)
     )
 
     .catch((err) => console.log(err))

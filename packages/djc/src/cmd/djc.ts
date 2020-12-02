@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { exec } from 'child_process'
+import { spawn } from 'child_process'
 import mm from 'minimist'
 import { help } from './djc-help'
 import { init } from './djc-init'
@@ -21,14 +21,8 @@ else if (argv.i) {
 
 // build
 else if (argv.b) {
-  const cmd =
-    argv.b === 'verbose' ? 'DEBUG=dubbo* ts-node index.ts' : 'ts-node index.ts'
-  // 先去build当前的文件
-  exec(cmd, (err, stdout, stderr) => {
-    if (err) {
-      throw err
-    }
-    console.log(stdout, stderr)
+  spawn('npx', ['ts-node', './index.ts'], {
+    stdio: 'inherit',
   })
 }
 
