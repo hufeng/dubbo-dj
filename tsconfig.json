@@ -4,13 +4,15 @@
     "module": "commonjs",
     "strict": true,
 
-    "rootDir": "./src",
-    "outDir": "./lib",
+    "allowUnreachableCode": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
 
-    "esModuleInterop": true,
+    "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-
-    "skipDefaultLibCheck": true
-  }
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": ["__tests__"]
 }
