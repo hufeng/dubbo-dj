@@ -38,6 +38,7 @@ export default class ConsumerService extends Emitter {
 
     return consumerServiceDot({
       mott: this.mott,
+      comment: this.service.comment,
       imports: this.imports(this.service.deps).join(';'),
       infName: this.service.infName,
       service: this.service.fullClsName,

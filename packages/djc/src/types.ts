@@ -7,7 +7,7 @@ export interface IType {
   generic?: Array<Entity | IType>
 }
 
-export interface IJavaClazzField {
+export interface IEntityField {
   name: string
   type: IType
   comment?: string

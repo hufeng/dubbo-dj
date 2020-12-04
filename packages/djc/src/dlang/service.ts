@@ -8,8 +8,8 @@ export class Service extends Lang {
   _methods: TServiceMethod = {}
   private _curMethodName: string = ''
 
-  constructor(fullClsName: string) {
-    super(fullClsName)
+  constructor(fullClsName: string, comment?: string) {
+    super(fullClsName, comment)
   }
 
   group(group: string) {
@@ -71,8 +71,8 @@ export class Service extends Lang {
   }
 }
 
-export default function service(fullClsName: string) {
-  const s = new Service(fullClsName)
+export default function service(fullClsName: string, comment?: string) {
+  const s = new Service(fullClsName, comment)
   return {
     group(group: string) {
       s.group(group)

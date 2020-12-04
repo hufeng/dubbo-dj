@@ -1,15 +1,14 @@
-import { IJavaClazzField, IType } from '../types'
+import { IEntityField, IType } from '../types'
 import Lang from './lang'
 
 export class Entity extends Lang {
-  fields: Array<IJavaClazzField> = []
-  constructor(fullClsName: string) {
-    super(fullClsName)
+  fields: Array<IEntityField> = []
+  constructor(fullClsName: string, comment?: string) {
+    super(fullClsName, comment)
     this.deps.add('js-to-java', 'java')
   }
 
   field(name: string, type: Entity | (() => IType), comment?: string) {
-    // 当前的参数类型是 JavaClazz 实例
     if (type instanceof Entity) {
       this.javaClazzFiled(type, name, comment)
       return this
@@ -99,7 +98,7 @@ export class Entity extends Lang {
           tsType: `${tsType}<${renamed}>`,
           javaType: `${javaType}(s.$lhs(this.${name}))`,
         },
-        comment: this.getComment(comment),
+        comment: this.fieldComment(comment),
       })
     } else {
       // 泛型的类型为基本类型
@@ -109,7 +108,7 @@ export class Entity extends Lang {
           tsType: `${tsType}<${g.tsType}>`,
           javaType: `${javaType}(s.$lhs(this.${name}, ${g.javaType}))`,
         },
-        comment: this.getComment(comment),
+        comment: this.fieldComment(comment),
       })
     }
   }
@@ -126,7 +125,7 @@ export class Entity extends Lang {
         tsType: tsType,
         javaType: `${javaType}(this.${name})`,
       },
-      comment: this.getComment(comment),
+      comment: this.fieldComment(comment),
     })
   }
 
@@ -142,13 +141,13 @@ export class Entity extends Lang {
         tsType: renamed,
         javaType: `this.${name}.__fields2java()`,
       },
-      comment: this.getComment(comment),
+      comment: this.fieldComment(comment),
     })
   }
 }
 
-export default function entity(fullClsName: string) {
-  const e = new Entity(fullClsName)
+export default function entity(fullClsName: string, comment?: string) {
+  const e = new Entity(fullClsName, comment)
   return {
     field(name: string, type: Entity | (() => IType), comment?: string) {
       e.field(name, type, comment)

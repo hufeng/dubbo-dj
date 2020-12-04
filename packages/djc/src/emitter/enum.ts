@@ -14,6 +14,7 @@ export default class EnumEmitter extends Emitter {
   get code() {
     return enumDot({
       mott: this.mott,
+      comment: this.enumer.comment,
       name: this.enumer.clsName,
       fields: this.enumer.fields,
     })

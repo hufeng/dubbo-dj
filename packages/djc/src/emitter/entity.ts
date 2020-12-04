@@ -18,6 +18,7 @@ export default class EntityEmitter extends Emitter {
   get code(): string {
     return entityDot({
       mott: this.mott,
+      comment: this.entity.comment,
       imports: this.imports(this.entity.deps).join(';'),
       cls: this.entity.fullClsName,
       infName: this.entity.infName,

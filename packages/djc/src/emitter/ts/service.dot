@@ -6,6 +6,9 @@
 {{=`import ${it.serviceName} from './base/${it.serviceName}';`}}
 {{="\n\n"}}
 
+{{=it.comment}}
+{{="\n\n"}}
+
 export default class {{=it.serviceName + 'Impl'}} extends {{=it.serviceName}}{
   dubboInterface = '{{=it.service}}';
   group = '{{=it.group}}';

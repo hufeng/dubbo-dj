@@ -34,6 +34,7 @@ export default class AbstractService extends Emitter {
 
     return abstractServiceDot({
       mott: this.mott,
+      comment: this.service.comment,
       imports: this.imports(this.service.deps).join(';'),
       service: this.service.fullClsName,
       serviceName: this.service.clsName,

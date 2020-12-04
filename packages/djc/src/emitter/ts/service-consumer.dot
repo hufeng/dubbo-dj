@@ -21,6 +21,11 @@ export const {{=it.serviceName}}Wrapper = {
 {{="\n\n"}}
 
 
+{{=it.comment}}
+
+{{="\n\n"}}
+
+
 export function {{=it.serviceName}}(dubbo: Dubbo): {{=it.infName}}{
  return dubbo.proxyService<{{=it.infName}}>({
     dubboInterface: '{{=it.service}}',

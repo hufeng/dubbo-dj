@@ -3,7 +3,7 @@ import path from 'path'
 import dot from 'dot'
 
 export const entityDot = dot.template(
-  fs.readFileSync(path.join(__dirname, './cls.dot')).toString()
+  fs.readFileSync(path.join(__dirname, './entity.dot')).toString()
 )
 
 export const enumDot = dot.template(
