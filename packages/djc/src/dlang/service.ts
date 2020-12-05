@@ -45,7 +45,7 @@ export class Service extends Lang {
         type: renamed,
       })
     } else {
-      // FIXEDME 泛型的处理
+      // FIXME 泛型的处理
       method.args.push({
         name,
         type: type().tsType,
@@ -63,7 +63,7 @@ export class Service extends Lang {
       const renameClsName = this.deps.add(type.fullClsName, type.clsName)
       method.ret = renameClsName
     } else {
-      // FXIEDME 反省处理
+      // FIXME 反省处理
       method.ret = type().tsType
     }
 

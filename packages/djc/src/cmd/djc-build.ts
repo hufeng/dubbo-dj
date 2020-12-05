@@ -25,7 +25,7 @@ export async function djc(build: IBuildParam) {
   log('class %s', JSON.stringify(entity, null, 2))
   log('service %s', JSON.stringify(service, null, 2))
 
-  // generate clazz code
+  // generate entity code
   for (let m of Object.values(entity || {})) {
     if (m instanceof Enum) {
       const e = new EnumEmitter(m, 'ts')

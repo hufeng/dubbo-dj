@@ -13,15 +13,15 @@ export async function init(dir: string) {
 
   // 如果当前目录已经存在提示用户是否覆盖
   if (fsx.pathExistsSync(langdir)) {
-    const { anwser } = await inrequirer.prompt([
+    const { answer } = await inrequirer.prompt([
       {
         type: 'confirm',
-        name: 'anwser',
+        name: 'answer',
         message: 'dsl dir already exists, overwrite it?',
         default: true,
       },
     ])
-    if (!anwser) {
+    if (!answer) {
       return
     }
   }

@@ -16,19 +16,26 @@ export interface ICount {
 export default class Deps {
   private map: Map<string, ICount> = new Map()
 
-  add(fullClsName: string, clsName: string, isDefault: boolean = true) {
+  /**
+   * 添加依赖
+   * @param fullName 当前entity或者service的全名称
+   * @param clsName  当前的类名
+   * @param isDefault  是不是默认导入
+   */
+
+  add(fullName: string, clsName: string, isDefault: boolean = true) {
     let val = this.map.get(clsName)
 
     if (val) {
-      // 如果已经存在
-      const existClsName = val.map[fullClsName]
+      // 如果当前的依赖已经存在
+      const existClsName = val.map[fullName]
       if (existClsName) {
         return existClsName.clsName
       }
 
       // 不存在
       const renameClsName = `${clsName}${val.offset}`
-      val.map[fullClsName] = {
+      val.map[fullName] = {
         clsName: renameClsName,
         isDefault,
       }
@@ -38,7 +45,7 @@ export default class Deps {
       this.map.set(clsName, {
         offset: 1,
         map: {
-          [fullClsName]: {
+          [fullName]: {
             clsName,
             isDefault,
           },
@@ -49,6 +56,9 @@ export default class Deps {
     return clsName
   }
 
+  /**
+   * 获取当前需要导入的模块
+   */
   get imports() {
     const imports = []
     for (let { map } of this.map.values()) {

@@ -10,7 +10,7 @@ export class Entity extends Lang {
 
   field(name: string, type: Entity | (() => IType), comment?: string) {
     if (type instanceof Entity) {
-      this.javaClazzFiled(type, name, comment)
+      this.addEntityFiled(type, name, comment)
       return this
     }
 
@@ -19,7 +19,7 @@ export class Entity extends Lang {
 
     // 当前field为基础类型，不带泛型的
     if (!generic || generic.length === 0) {
-      this.javaBasicTypeField(name, tsType, javaType, comment)
+      this.addBasicField(name, tsType, javaType, comment)
       return this
     }
 
@@ -27,25 +27,25 @@ export class Entity extends Lang {
     // 如List,Set带一种类型
     // Map, HashMap等两种类型
 
-    // add suger transform
-    this.deps.add('@dubbo/dj-suger', 's')
+    // add sugar transform
+    this.deps.add('@dubbo/dj-sugar', 's')
 
     // 针对泛型的处理 - 一元泛型- 针对list, Set, Collection, Iterator
     if (generic.length === 1) {
       // 获取当前的泛型的类型
-      this.oneGenericField(generic, name, tsType, javaType, comment)
+      this.addOneGenericField(generic, name, tsType, javaType, comment)
       return this
     }
 
     // 针对二元泛型的处理， Map, HashMap, Dictionary
     else if (generic.length === 2) {
-      this.twoGenericsField(generic, name)
+      this.addTwoGenericsField(generic, name)
     }
 
     return this
   }
 
-  private twoGenericsField(generic: (Entity | IType)[], name: string) {
+  private addTwoGenericsField(generic: (Entity | IType)[], name: string) {
     const [lg, rg] = generic
 
     // 二元的左子树泛型 只支持java.String
@@ -55,7 +55,7 @@ export class Entity extends Lang {
       )
     }
 
-    // 右侧泛型是 JavaClazz类型
+    // 右侧泛型是 Entity 类型
     if (rg instanceof Entity) {
       const renamed = this.deps.add(rg.fullClsName, rg.clsName)
       this.fields.push({
@@ -81,7 +81,7 @@ export class Entity extends Lang {
     }
   }
 
-  private oneGenericField(
+  private addOneGenericField(
     generic: (Entity | IType)[],
     name: string,
     tsType: string,
@@ -113,7 +113,7 @@ export class Entity extends Lang {
     }
   }
 
-  private javaBasicTypeField(
+  private addBasicField(
     name: string,
     tsType: string,
     javaType: string,
@@ -129,7 +129,7 @@ export class Entity extends Lang {
     })
   }
 
-  private javaClazzFiled(
+  private addEntityFiled(
     type: Entity,
     name: string,
     comment: string | undefined
