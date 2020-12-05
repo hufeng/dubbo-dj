@@ -1,4 +1,5 @@
 import { IEntityField, IType } from '../types'
+import { Enum } from './enum'
 import Lang from './lang'
 
 export class Entity extends Lang {
@@ -8,7 +9,14 @@ export class Entity extends Lang {
     this.deps.add('js-to-java', 'java')
   }
 
-  field(name: string, type: Entity | (() => IType), comment?: string) {
+  field(name: string, type: Entity | Enum | (() => IType), comment?: string) {
+    // 如果当前的field类型为enum
+    if (type instanceof Enum) {
+      this.addEnumField(type, name, comment)
+      return
+    }
+
+    // 如果当前的属性类型为entity实体
     if (type instanceof Entity) {
       this.addEntityFiled(type, name, comment)
       return this
@@ -129,11 +137,19 @@ export class Entity extends Lang {
     })
   }
 
-  private addEntityFiled(
-    type: Entity,
-    name: string,
-    comment: string | undefined
-  ) {
+  private addEnumField(type: Enum, name: string, comment?: string) {
+    const renamed = this.deps.add(type.fullClsName, type.clsName)
+    this.fields.push({
+      name,
+      type: {
+        tsType: renamed,
+        javaType: `java.enum('${type.fullClsName}', ${renamed}[this.${name}])`,
+      },
+      comment: this.fieldComment(comment),
+    })
+  }
+
+  private addEntityFiled(type: Entity, name: string, comment?: string) {
     const renamed = this.deps.add(type.fullClsName, type.clsName)
     this.fields.push({
       name,
@@ -149,7 +165,7 @@ export class Entity extends Lang {
 export default function entity(fullClsName: string, comment?: string) {
   const e = new Entity(fullClsName, comment)
   return {
-    field(name: string, type: Entity | (() => IType), comment?: string) {
+    field(name: string, type: Entity | Enum | (() => IType), comment?: string) {
       e.field(name, type, comment)
       return this
     },

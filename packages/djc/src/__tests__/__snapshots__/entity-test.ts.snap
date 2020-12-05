@@ -25,6 +25,7 @@ exports[`test user entity 1`] = `
  */
 
 import java from 'js-to-java'
+import Color from '../enum/Color'
 
 export interface IUser {
   /**
@@ -36,6 +37,7 @@ export interface IUser {
    * 用户名
    */
   name: string
+  color: Color
 }
 
 /**
@@ -52,16 +54,19 @@ export default class User {
    * 用户名
    */
   name: string
+  color: Color
 
   constructor(props: IUser) {
     this.id = props.id
     this.name = props.name
+    this.color = props.color
   }
 
   __fields2java() {
     java('org.apache.dubbo.domain.User', {
       id: java.Integer(this.id),
       name: java.String(this.name),
+      color: java.enum('org.apache.dubbo.enum.Color', Color[this.color]),
     })
   }
 }

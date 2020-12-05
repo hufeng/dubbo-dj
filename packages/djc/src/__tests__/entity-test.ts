@@ -4,7 +4,7 @@ import EnumEmitter from '../emitter/enum'
 import AbstractService from '../emitter/service-abstract'
 
 const color = dl
-  .enumer('Color', '颜色类型的枚举')
+  .enumer('org.apache.dubbo.enum.Color', '颜色类型的枚举')
   .field('RED', 0)
   .field('GREEN', 1)
   .field('BLUE', 2)
@@ -14,6 +14,7 @@ const user = dl
   .entity('org.apache.dubbo.domain.User', '用户模块')
   .field('id', dl.Integer, '用户id')
   .field('name', dl.String, '用户名')
+  .field('color', color)
   .ok()
 
 const userService = dl
