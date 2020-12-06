@@ -1,5 +1,11 @@
 import * as dl from '../dlang'
-import { ConsumerEmitter, EntityEmitter, fmt, ServiceEmitter } from '../emitter'
+import {
+  AbstractServiceEmitter,
+  ConsumerEmitter,
+  EntityEmitter,
+  fmt,
+  ServiceEmitter,
+} from '../emitter'
 import EnumEmitter from '../emitter/enum'
 import AbstractService from '../emitter/service-abstract'
 
@@ -35,6 +41,16 @@ const enumService = dl
   .ret(color)
   .ok()
 
+const gService = dl
+  .service('org.apache.dubbo.service.GenService')
+  .group('dubbo')
+  .version('1.0.0')
+  .method('sayHello')
+  .arg('name', dl.List(dl.String))
+  .method('sayWorld')
+  .arg('user', dl.List(user))
+  .ok()
+
 it('test user entity', () => {
   const emitter = new EntityEmitter(user, 'ts')
   expect(fmt(emitter.code)).toMatchSnapshot()
@@ -58,5 +74,10 @@ it('test user service', () => {
 
 it('test enum service', () => {
   const serviceEmitter = new ServiceEmitter(enumService, 'ts')
+  expect(fmt(serviceEmitter.code)).toMatchSnapshot()
+})
+
+it('test generic service', () => {
+  const serviceEmitter = new AbstractServiceEmitter(gService, 'ts')
   expect(fmt(serviceEmitter.code)).toMatchSnapshot()
 })

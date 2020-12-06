@@ -54,11 +54,58 @@ export class Service extends Lang {
       return this
     }
 
-    // FIXME 泛型的处理
-    method.args.push({
-      name,
-      type: type().tsType,
-    })
+    // 获取当前的类型信息
+    const { tsType, generic } = type()
+
+    // 如果当前类型没有泛型
+    if (!generic || generic.length === 0) {
+      method.args.push({
+        name,
+        type: tsType,
+      })
+
+      return this
+    }
+
+    // 如果当前有泛型，泛型参数有一个
+
+    if (generic?.length === 1) {
+      const g = generic[0]
+      if (g instanceof Entity) {
+        const renamed = this.deps.add(g.fullClsName, g.infName)
+        method.args.push({
+          name,
+          type: `${tsType}<${renamed}>`,
+        })
+      } else {
+        method.args.push({
+          name,
+          type: `${tsType}<${g.tsType}>`,
+        })
+      }
+      return this
+    }
+
+    if (generic.length === 2) {
+      const [lg, rg] = generic
+      if (lg instanceof Entity || lg.javaType !== 'java.String') {
+        throw new Error(
+          'Map/HashMap/Dictionary left generic type only support java.String'
+        )
+      }
+      if (rg instanceof Entity) {
+        const renamed = this.deps.add(rg.fullClsName, rg.clsName)
+        method.args.push({
+          name,
+          type: `${tsType}<string, ${renamed}`,
+        })
+      } else {
+        method.args.push({
+          name,
+          type: `${tsType}<string, ${rg.tsType}>`,
+        })
+      }
+    }
 
     return this
   }

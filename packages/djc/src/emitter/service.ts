@@ -27,9 +27,10 @@ export default class ServiceEmitter extends Emitter {
 
   get code() {
     const methods = []
-    const args = []
 
     for (let [name, meta] of Object.entries(this.service._methods)) {
+      const args = []
+
       for (let arg of meta.args) {
         args.push(`${arg.name}: ${arg.type}`)
       }
