@@ -1,6 +1,7 @@
 import { IType, TServiceMethod } from '../types'
 import Lang from './lang'
 import { Entity } from './entity'
+import { Enum } from './enum'
 
 export class Service extends Lang {
   _group: string = ''
@@ -35,8 +36,14 @@ export class Service extends Lang {
     return this
   }
 
-  arg(name: string, type: Entity | (() => IType)) {
+  arg(name: string, type: Entity | Enum | (() => IType)) {
     const method = this._methods[this._curMethodName]
+
+    if (type instanceof Enum) {
+      const renamed = this.deps.add(type.fullClsName, type.clsName)
+      method.args.push({ name, type: renamed })
+      return this
+    }
 
     if (type instanceof Entity) {
       const renamed = this.deps.add(type.fullClsName, type.infName, false)
@@ -44,28 +51,36 @@ export class Service extends Lang {
         name,
         type: renamed,
       })
-    } else {
-      // FIXME 泛型的处理
-      method.args.push({
-        name,
-        type: type().tsType,
-      })
+      return this
     }
+
+    // FIXME 泛型的处理
+    method.args.push({
+      name,
+      type: type().tsType,
+    })
 
     return this
   }
 
-  ret(type: Entity | (() => IType)) {
+  ret(type: Entity | Enum | (() => IType)) {
     // get current method meta data
     const method = this._methods[this._curMethodName]
+
+    if (type instanceof Enum) {
+      const renamed = this.deps.add(type.fullClsName, type.clsName)
+      method.ret = renamed
+      return this
+    }
 
     if (type instanceof Entity) {
       const renameClsName = this.deps.add(type.fullClsName, type.clsName)
       method.ret = renameClsName
-    } else {
-      // FIXME 反省处理
-      method.ret = type().tsType
+      return this
     }
+
+    // FIXME 反省处理
+    method.ret = type().tsType
 
     return this
   }
@@ -89,15 +104,16 @@ export default function service(fullClsName: string, comment?: string) {
       return this
     },
 
-    arg(name: string, type: Entity | (() => IType)) {
+    arg(name: string, type: Entity | Enum | (() => IType)) {
       s.arg(name, type)
       return this
     },
 
-    ret(type: Entity | (() => IType)) {
+    ret(type: Entity | Enum | (() => IType)) {
       s.ret(type)
       return this
     },
+
     ok() {
       return s
     },

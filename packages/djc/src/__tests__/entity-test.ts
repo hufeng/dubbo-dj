@@ -26,6 +26,15 @@ const userService = dl
   .ret(dl.String)
   .ok()
 
+const enumService = dl
+  .service('org.apache.dubbo.service.EnumService')
+  .group('dubbo')
+  .version('1.0.0')
+  .method('sayHello')
+  .arg('color', color)
+  .ret(color)
+  .ok()
+
 it('test user entity', () => {
   const emitter = new EntityEmitter(user, 'ts')
   expect(fmt(emitter.code)).toMatchSnapshot()
@@ -45,4 +54,9 @@ it('test user service', () => {
 
   const consumerService = new ConsumerEmitter(userService, 'ts')
   expect(fmt(consumerService.code)).toMatchSnapshot()
+})
+
+it('test enum service', () => {
+  const serviceEmitter = new ServiceEmitter(enumService, 'ts')
+  expect(fmt(serviceEmitter.code)).toMatchSnapshot()
 })
