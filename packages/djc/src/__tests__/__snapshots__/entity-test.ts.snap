@@ -45,7 +45,7 @@ exports[`test generic service 1`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import User from '../../domain/User'
+import IUser from '../../domain/User'
 
 export default abstract class GenService {
   dubboInterface = 'org.apache.dubbo.service.GenService'
@@ -53,7 +53,7 @@ export default abstract class GenService {
   version = '1.0.0'
 
   abstract sayHello(name: Array<string>): void
-  abstract sayWorld(user: Array<User>): void
+  abstract sayWorld(user: Array<IUser>): void
 }
 "
 `;
