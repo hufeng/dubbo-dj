@@ -77,6 +77,9 @@ export class Service extends Lang {
           name,
           type: `${tsType}<${renamed}>`,
         })
+      } else if (g instanceof Enum) {
+        const rename = this.deps.add(g.fullClsName, g.clsName)
+        method.args.push({ name, type: `${tsType}<${rename}>` })
       } else {
         method.args.push({
           name,
@@ -94,6 +97,12 @@ export class Service extends Lang {
         )
       }
       if (rg instanceof Entity) {
+        const renamed = this.deps.add(rg.fullClsName, rg.infName)
+        method.args.push({
+          name,
+          type: `${tsType}<string, ${renamed}`,
+        })
+      } else if (rg instanceof Enum) {
         const renamed = this.deps.add(rg.fullClsName, rg.clsName)
         method.args.push({
           name,
@@ -126,8 +135,48 @@ export class Service extends Lang {
       return this
     }
 
-    // FIXME 反省处理
-    method.ret = type().tsType
+    const { tsType, generic } = type()
+
+    // basic type, not generic type
+    if (!generic || generic.length === 0) {
+      method.ret = tsType
+      return this
+    }
+
+    // 如果只有一个泛型
+    if (generic.length === 1) {
+      const g = generic[0]
+      if (g instanceof Entity) {
+        const rename = this.deps.add(g.fullClsName, g.infName)
+        method.ret = `${tsType}<${rename}>`
+      } else if (g instanceof Enum) {
+        const rename = this.deps.add(g.fullClsName, g.clsName)
+        method.ret = `${tsType}<${rename}>`
+      } else {
+        method.ret = `${tsType}<${g.tsType}>`
+      }
+      return this
+    }
+
+    // 如果有两个泛型
+    if (generic.length === 2) {
+      const [lg, rg] = generic
+      if (lg instanceof Entity || lg.javaType !== 'java.String') {
+        throw new Error(
+          'Map/HashMap/Dictionary left generic type only support java.String'
+        )
+      }
+
+      if (rg instanceof Entity) {
+        const rename = this.deps.add(rg.fullClsName, rg.infName)
+        method.ret = `${tsType}<string, ${rename}>`
+      } else if (rg instanceof Enum) {
+        const rename = this.deps.add(rg.fullClsName, rg.clsName)
+        method.ret = `${tsType}<string, ${rename}>`
+      } else {
+        method.ret = `${tsType}<string, ${rg.tsType}>`
+      }
+    }
 
     return this
   }

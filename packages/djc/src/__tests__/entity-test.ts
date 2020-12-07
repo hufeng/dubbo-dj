@@ -49,6 +49,8 @@ const gService = dl
   .arg('name', dl.List(dl.String))
   .method('sayWorld')
   .arg('user', dl.List(user))
+  .arg('color', color)
+  .ret(dl.Map(dl.String, user))
   .ok()
 
 it('test user entity', () => {
