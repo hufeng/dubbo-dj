@@ -162,15 +162,18 @@ export class Entity extends Lang {
   }
 }
 
+class EntityBuilder {
+  constructor(private e: Entity) {}
+  field(name: string, type: Entity | Enum | (() => IType), comment?: string) {
+    this.e.field(name, type, comment)
+    return this
+  }
+  ok() {
+    return this.e
+  }
+}
+
 export default function entity(fullClsName: string, comment?: string) {
   const e = new Entity(fullClsName, comment)
-  return {
-    field(name: string, type: Entity | Enum | (() => IType), comment?: string) {
-      e.field(name, type, comment)
-      return this
-    },
-    ok() {
-      return e
-    },
-  }
+  return new EntityBuilder(e)
 }

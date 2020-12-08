@@ -182,36 +182,38 @@ export class Service extends Lang {
   }
 }
 
+class ServiceBuilder {
+  constructor(private s: Service) {}
+  group(group: string) {
+    this.s.group(group)
+    return this
+  }
+
+  version(version: string) {
+    this.s.version(version)
+    return this
+  }
+
+  method(name: string) {
+    this.s.method(name)
+    return this
+  }
+
+  arg(name: string, type: Entity | Enum | (() => IType)) {
+    this.s.arg(name, type)
+    return this
+  }
+  ret(type: Entity | Enum | (() => IType)) {
+    this.s.ret(type)
+    return this
+  }
+
+  ok() {
+    return this.s
+  }
+}
+
 export default function service(fullClsName: string, comment?: string) {
   const s = new Service(fullClsName, comment)
-  return {
-    group(group: string) {
-      s.group(group)
-      return this
-    },
-
-    version(version: string) {
-      s.version(version)
-      return this
-    },
-
-    method(name: string) {
-      s.method(name)
-      return this
-    },
-
-    arg(name: string, type: Entity | Enum | (() => IType)) {
-      s.arg(name, type)
-      return this
-    },
-
-    ret(type: Entity | Enum | (() => IType)) {
-      s.ret(type)
-      return this
-    },
-
-    ok() {
-      return s
-    },
-  }
+  return new ServiceBuilder(s)
 }
