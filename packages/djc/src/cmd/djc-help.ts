@@ -1,7 +1,7 @@
 export function help() {
   console.log(`Usage: dj [options]
 
-A dsl tool that generates dubbo code ❤️
+A dsl tool that generate dubbo code ❤️
 
 Options:
   -V, --version   output the version number
