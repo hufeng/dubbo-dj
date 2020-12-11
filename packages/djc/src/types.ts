@@ -28,7 +28,7 @@ export interface IMethodMeta {
   ret: { tsType: string; javaType: string }
 }
 
-export interface IBuildParam {
+export interface IConfigure {
   buildEntry: {
     entity: {
       [k in string]: Entity
@@ -37,7 +37,13 @@ export interface IBuildParam {
       [k in string]: Service
     }
   }
-  config: {
-    lang: Array<'ts' | 'java' | 'go'>
+  output?: {
+    lang?: Array<'ts' | 'java' | 'go'> | 'ts' | 'java' | 'go'
+    type?:
+      | Array<'consumer' | 'service' | 'serviceImpl' | 'entity'>
+      | 'consumer'
+      | 'service'
+      | 'serviceImpl'
+      | 'entity'
   }
 }

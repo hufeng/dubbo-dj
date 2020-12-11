@@ -108,5 +108,6 @@ export const userService = dl
 
     .catch((err) => console.log(err))
 
-  console.log(`init successfully， please cd dubbo-dsl dir`)
+  console.log(`dubbo-dsl project init successfully`)
+  console.log(`please cd dubbo-dsl dir`)
 }

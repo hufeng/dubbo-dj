@@ -4,5 +4,4 @@ import * as service from './service'
 
 djc({
   buildEntry: { entity, service },
-  config: { lang: ['ts'] },
 })
