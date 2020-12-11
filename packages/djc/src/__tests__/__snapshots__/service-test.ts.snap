@@ -27,7 +27,7 @@ exports[`test generic service 1`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import IUser from '../../domain/User'
+import { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
 import s from '@dubbo/sugar'
 
@@ -62,7 +62,7 @@ exports[`test user service 1`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import IUser from '../domain/User'
+import User, { IUser } from '../domain/User'
 import Color from '../enum/Color'
 import s from '@dubbo/sugar'
 import UserService from './base/UserService'
@@ -113,7 +113,7 @@ exports[`test user service 2`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import IUser from '../../domain/User'
+import User, { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
 import s from '@dubbo/sugar'
 
@@ -134,7 +134,7 @@ export default abstract class UserService {
       },
       sayWorld: (name: string, user: IUser, users: Array<IUser>) => {
         const res = this.sayWorld(name, user, users)
-        return res.__field2java()
+        return new User(res).__field2java()
       },
       add: (x: number, y: number) => {
         const res = this.add(x, y)
@@ -180,7 +180,7 @@ exports[`test user service 3`] = `
 
 import { Dubbo, TDubboCallResult } from 'apache-dubbo-js'
 import { argumentMap } from 'interpret-util'
-import IUser from '../../domain/User'
+import User, { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
 import s from '@dubbo/sugar'
 

@@ -1,3 +1,5 @@
+import { getWithDef } from '../common'
+
 type fullClassName = string
 
 export interface ICount {
@@ -60,14 +62,24 @@ export default class Deps {
    * 获取当前需要导入的模块
    */
   get imports() {
-    const imports = []
+    const imports = {} as {
+      [k in string]: {
+        defaultImport: string
+        specifiers: Array<string>
+      }
+    }
     for (let { map } of this.map.values()) {
       for (let [fullClassName, { clsName, isDefault }] of Object.entries(map)) {
-        imports.push({
-          fullClassName,
-          importName: clsName,
-          isDefault,
+        const clsInfo = getWithDef(imports, fullClassName, {
+          defaultImport: '',
+          specifiers: [],
         })
+
+        if (isDefault) {
+          clsInfo.defaultImport = clsName
+        } else {
+          clsInfo.specifiers.push(clsName)
+        }
       }
     }
     return imports

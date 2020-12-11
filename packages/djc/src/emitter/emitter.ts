@@ -29,19 +29,28 @@ export default abstract class Emitter {
 
   imports(deps: Deps) {
     const imports = []
-    for (let { fullClassName, importName, isDefault } of deps.imports) {
+    for (let [fullClassName, { defaultImport, specifiers }] of Object.entries(
+      deps.imports
+    )) {
       if (relWhiteList.includes(fullClassName)) {
-        imports.push(`import ${importName} from '${fullClassName}'`)
+        imports.push(`import ${defaultImport} from '${fullClassName}'`)
       } else {
         let rel = this.relPath(this.fullClsName, fullClassName)
         if (!rel.startsWith('./') && !rel.startsWith('../')) {
           rel = './' + rel
         }
-        if (isDefault) {
-          imports.push(`import ${importName} from '${rel}'`)
-        } else {
-          imports.push(`import {${importName}} from '${rel}'`)
+
+        let importName = ''
+        if (defaultImport !== '') {
+          importName += defaultImport + ''
         }
+        if (specifiers.length > 0) {
+          if (importName) {
+            importName += ','
+          }
+          importName += `{${specifiers.join()}}`
+        }
+        imports.push(`import ${importName} from '${rel}'`)
       }
     }
     return imports

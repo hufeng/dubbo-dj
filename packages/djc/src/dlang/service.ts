@@ -51,8 +51,8 @@ export class Service extends Lang {
         method.args.push({ name, type: clsName })
       },
       onEntity: (t) => {
-        const clsName = this.deps.add(t.fullClsName, t.infName)
-        method.args.push({ name, type: clsName })
+        const infName = this.deps.add(t.fullClsName, t.infName, false)
+        method.args.push({ name, type: infName })
       },
       onGenericOneBasic: (t) => {
         method.args.push({
@@ -68,10 +68,14 @@ export class Service extends Lang {
         })
       },
       onGenericOneEntity: (t) => {
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
+        const infName = this.deps.add(
+          t.generic.fullClsName,
+          t.generic.infName,
+          false
+        )
         method.args.push({
           name,
-          type: `${t.tsType}<${clsName}>`,
+          type: `${t.tsType}<${infName}>`,
         })
       },
       onGenericTwoBasic: (t) => {
@@ -88,10 +92,14 @@ export class Service extends Lang {
         })
       },
       onGenericTwoEntity: (t) => {
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
+        const infName = this.deps.add(
+          t.generic.fullClsName,
+          t.generic.infName,
+          false
+        )
         method.args.push({
           name,
-          type: `${t.tsType}<string, ${clsName}>`,
+          type: `${t.tsType}<string, ${infName}>`,
         })
       },
     })
@@ -122,10 +130,11 @@ export class Service extends Lang {
         }
       },
       onEntity: (t) => {
-        const clsName = this.deps.add(t.fullClsName, t.infName)
+        const infName = this.deps.add(t.fullClsName, t.infName, false)
+        const clsName = this.deps.add(t.fullClsName, t.clsName)
         method.ret = {
-          tsType: clsName,
-          javaType: `res.__field2java()`,
+          tsType: infName,
+          javaType: `new ${clsName}(res).__field2java()`,
         }
       },
       onGenericOneBasic: (t) => {
@@ -145,9 +154,13 @@ export class Service extends Lang {
       },
       onGenericOneEntity: (t) => {
         this.deps.add('@dubbo/sugar', 's')
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
+        const infName = this.deps.add(
+          t.generic.fullClsName,
+          t.generic.infName,
+          false
+        )
         method.ret = {
-          tsType: `${t.tsType}<${clsName}>`,
+          tsType: `${t.tsType}<${infName}>`,
           javaType: `${t.javaType}(s.$lhs(res))`,
         }
       },
@@ -168,9 +181,13 @@ export class Service extends Lang {
       },
       onGenericTwoEntity: (t) => {
         this.deps.add('@dubbo/sugar', 's')
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
+        const infName = this.deps.add(
+          t.generic.fullClsName,
+          t.generic.infName,
+          false
+        )
         method.ret = {
-          tsType: `${t.tsType}<string, ${clsName}>`,
+          tsType: `${t.tsType}<string, ${infName}>`,
           javaType: `s.$mhs(res)`,
         }
       },
