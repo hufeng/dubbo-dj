@@ -36,7 +36,7 @@ export default class AbstractService extends Emitter {
         const retType = tsType ? tsType : 'void'
         methods.push(`abstract ${name}(${args.join()}):Promise<${retType}>;`)
         proxyMethods.push(
-          `${name}: (${args.join()}) => {const res = this.${name}(${argNames.join()}); return ${javaType}}`
+          `${name}: async (${args.join()}) => {const res = await this.${name}(${argNames.join()}); return ${javaType}}`
         )
       } else {
         methods.push(`abstract ${name}(${args.join()}):Promise<void>;`)
@@ -45,7 +45,6 @@ export default class AbstractService extends Emitter {
         )
       }
     }
-
     return abstractServiceDot({
       mott: this.mott,
       comment: this.service.comment,

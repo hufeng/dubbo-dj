@@ -112,6 +112,8 @@ export class Service extends Lang {
       return this
     }
 
+    this.deps.add('js-to-java', 'java')
+
     // get current method meta data
     const method = this._methods[this._curMethodName]
 
@@ -134,7 +136,7 @@ export class Service extends Lang {
         const clsName = this.deps.add(t.fullClsName, t.clsName)
         method.ret = {
           tsType: infName,
-          javaType: `new ${clsName}(res).__field2java()`,
+          javaType: `new ${clsName}(res).__fields2java()`,
         }
       },
       onGenericOneBasic: (t) => {

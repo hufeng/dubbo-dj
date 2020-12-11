@@ -12,12 +12,8 @@ export default abstract class {{=it.serviceName}} {
   dubboInterface = '{{=it.service}}';
   group = '{{=it.group}}';
   version = '{{=it.version}}';
-
-  {{="\n\n"}}
-  constructor() {
-    this.methods = {
-      {{=it.proxyMethods}}
-    }
+  methods = {
+    {{=it.proxyMethods}}
   }
 
   {{="\n\n"}}

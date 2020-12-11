@@ -10,10 +10,6 @@ import Color from '../enum/Color'
 import EnumService from './base/EnumService'
 
 export default class EnumServiceImpl extends EnumService {
-  constructor() {
-    super()
-  }
-
   async sayHello(color: Color): Promise<Color> {
     throw new Error('Method not implemented.')
   }
@@ -29,21 +25,19 @@ exports[`test generic service 1`] = `
 
 import { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
+import java from 'js-to-java'
 import s from '@dubbo/sugar'
 
 export default abstract class GenService {
   dubboInterface = 'org.apache.dubbo.service.GenService'
   group = 'dubbo'
   version = '1.0.0'
-
-  constructor() {
-    this.methods = {
-      sayHello: (name: Array<string>) => this.sayHello(name),
-      sayWorld: (user: Array<IUser>, color: Color) => {
-        const res = this.sayWorld(user, color)
-        return s.$mhs(res)
-      },
-    }
+  methods = {
+    sayHello: (name: Array<string>) => this.sayHello(name),
+    sayWorld: async (user: Array<IUser>, color: Color) => {
+      const res = await this.sayWorld(user, color)
+      return s.$mhs(res)
+    },
   }
 
   abstract sayHello(name: Array<string>): Promise<void>
@@ -62,9 +56,8 @@ exports[`test user service 1`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import User, { IUser } from '../domain/User'
+import { IUser } from '../domain/User'
 import Color from '../enum/Color'
-import s from '@dubbo/sugar'
 import UserService from './base/UserService'
 
 /**
@@ -72,10 +65,6 @@ import UserService from './base/UserService'
  */
 
 export default class UserServiceImpl extends UserService {
-  constructor() {
-    super()
-  }
-
   async sayHello(
     name: string,
     user: IUser,
@@ -114,6 +103,7 @@ exports[`test user service 2`] = `
  */
 
 import User, { IUser } from '../../domain/User'
+import java from 'js-to-java'
 import Color from '../../enum/Color'
 import s from '@dubbo/sugar'
 
@@ -125,30 +115,27 @@ export default abstract class UserService {
   dubboInterface = 'org.apache.dubbo.service.UserService'
   group = 'dubbo'
   version = '1.0.0'
-
-  constructor() {
-    this.methods = {
-      sayHello: (name: string, user: IUser, users: Array<IUser>) => {
-        const res = this.sayHello(name, user, users)
-        return java.String(res)
-      },
-      sayWorld: (name: string, user: IUser, users: Array<IUser>) => {
-        const res = this.sayWorld(name, user, users)
-        return new User(res).__field2java()
-      },
-      add: (x: number, y: number) => {
-        const res = this.add(x, y)
-        return java.int(res)
-      },
-      getColor: (color: Color) => {
-        const res = this.getColor(color)
-        return java.enum('org.apache.dubbo.enum.Color', Color[res])
-      },
-      getUsers: () => {
-        const res = this.getUsers()
-        return java.List(s.$lhs(res))
-      },
-    }
+  methods = {
+    sayHello: async (name: string, user: IUser, users: Array<IUser>) => {
+      const res = await this.sayHello(name, user, users)
+      return java.String(res)
+    },
+    sayWorld: async (name: string, user: IUser, users: Array<IUser>) => {
+      const res = await this.sayWorld(name, user, users)
+      return new User(res).__fields2java()
+    },
+    add: async (x: number, y: number) => {
+      const res = await this.add(x, y)
+      return java.int(res)
+    },
+    getColor: async (color: Color) => {
+      const res = await this.getColor(color)
+      return java.enum('org.apache.dubbo.enum.Color', Color[res])
+    },
+    getUsers: async () => {
+      const res = await this.getUsers()
+      return java.List(s.$lhs(res))
+    },
   }
 
   abstract sayHello(
@@ -180,9 +167,8 @@ exports[`test user service 3`] = `
 
 import { Dubbo, TDubboCallResult } from 'apache-dubbo-js'
 import { argumentMap } from 'interpret-util'
-import User, { IUser } from '../../domain/User'
+import { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
-import s from '@dubbo/sugar'
 
 export interface IUserService {
   sayHello(

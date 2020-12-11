@@ -27,13 +27,21 @@ export default abstract class Emitter {
     }`
   }
 
-  imports(deps: Deps) {
+  imports(
+    deps: Deps,
+    { filterDefault, filterWhiteList } = {
+      filterDefault: false,
+      filterWhiteList: false,
+    }
+  ) {
     const imports = []
     for (let [fullClassName, { defaultImport, specifiers }] of Object.entries(
       deps.imports
     )) {
       if (relWhiteList.includes(fullClassName)) {
-        imports.push(`import ${defaultImport} from '${fullClassName}'`)
+        if (!filterWhiteList) {
+          imports.push(`import ${defaultImport} from '${fullClassName}'`)
+        }
       } else {
         let rel = this.relPath(this.fullClsName, fullClassName)
         if (!rel.startsWith('./') && !rel.startsWith('../')) {
@@ -41,7 +49,11 @@ export default abstract class Emitter {
         }
 
         let importName = ''
-        if (defaultImport !== '') {
+        if (
+          (defaultImport !== '' && !filterDefault) ||
+          // enum
+          specifiers.length === 0
+        ) {
           importName += defaultImport + ''
         }
         if (specifiers.length > 0) {

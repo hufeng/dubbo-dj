@@ -45,7 +45,10 @@ export default class ServiceEmitter extends Emitter {
     return serviceDot({
       mott: this.mott,
       comment: this.service.comment,
-      imports: this.imports(this.service.deps).join(';'),
+      imports: this.imports(this.service.deps, {
+        filterDefault: true,
+        filterWhiteList: true,
+      }).join(';'),
       serviceName: this.service.clsName,
       methods: methods,
     })
