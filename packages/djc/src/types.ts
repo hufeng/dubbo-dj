@@ -1,10 +1,11 @@
 import { Entity } from './dlang/entity'
+import { Enum } from './dlang/enum'
 import { Service } from './dlang/service'
 
 export interface IType {
   tsType: string
   javaType: string
-  generic?: Array<Entity | IType>
+  generic?: Array<Entity | Enum | IType>
 }
 
 export interface IEntityField {
@@ -29,8 +30,12 @@ export interface IMethodMeta {
 
 export interface IBuildParam {
   buildEntry: {
-    entity: { [k in string]: Entity }
-    service: { [k in string]: Service }
+    entity: {
+      [k in string]: Entity
+    }
+    service: {
+      [k in string]: Service
+    }
   }
   config: {
     lang: Array<'ts' | 'java' | 'go'>

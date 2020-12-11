@@ -45,10 +45,7 @@ export default class ServiceEmitter extends Emitter {
       mott: this.mott,
       comment: this.service.comment,
       imports: this.imports(this.service.deps).join(';'),
-      service: this.service.fullClsName,
       serviceName: this.service.clsName,
-      group: this.service._group,
-      version: this.service._version,
       methods: methods,
     })
   }

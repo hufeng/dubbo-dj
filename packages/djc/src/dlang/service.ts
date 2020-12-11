@@ -2,6 +2,7 @@ import { IType, TServiceMethod } from '../types'
 import Lang from './lang'
 import { Entity } from './entity'
 import { Enum } from './enum'
+import { parseTypeMeta } from './type'
 
 export class Service extends Lang {
   _group: string = ''
@@ -39,82 +40,62 @@ export class Service extends Lang {
   arg(name: string, type: Entity | Enum | (() => IType)) {
     const method = this._methods[this._curMethodName]
 
-    if (type instanceof Enum) {
-      const renamed = this.deps.add(type.fullClsName, type.clsName)
-      method.args.push({ name, type: renamed })
-      return this
-    }
-
-    if (type instanceof Entity) {
-      const renamed = this.deps.add(type.fullClsName, type.infName, false)
-      method.args.push({
-        name,
-        type: renamed,
-      })
-      return this
-    }
-
-    // 获取当前的类型信息
-    const { tsType, generic } = type()
-
-    // 如果当前类型没有泛型
-    if (!generic || generic.length === 0) {
-      method.args.push({
-        name,
-        type: tsType,
-      })
-
-      return this
-    }
-
-    // 如果当前有泛型，泛型参数有一个
-
-    if (generic?.length === 1) {
-      const g = generic[0]
-      if (g instanceof Entity) {
-        const renamed = this.deps.add(g.fullClsName, g.infName)
+    parseTypeMeta(type, {
+      onBasic(t) {
         method.args.push({
           name,
-          type: `${tsType}<${renamed}>`,
+          type: t.tsType,
         })
-      } else if (g instanceof Enum) {
-        const rename = this.deps.add(g.fullClsName, g.clsName)
-        method.args.push({ name, type: `${tsType}<${rename}>` })
-      } else {
+      },
+      onEnum: (t) => {
+        const clsName = this.deps.add(t.fullClsName, t.clsName)
+        method.args.push({ name, type: clsName })
+      },
+      onEntity: (t) => {
+        const clsName = this.deps.add(t.fullClsName, t.infName)
+        method.args.push({ name, type: clsName })
+      },
+      onGenericOneBasic: (t) => {
         method.args.push({
           name,
-          type: `${tsType}<${g.tsType}>`,
+          type: `${t.tsType}<${t.generic.tsType}>`,
         })
-      }
-      return this
-    }
-
-    if (generic.length === 2) {
-      const [lg, rg] = generic
-      if (lg instanceof Entity || lg.javaType !== 'java.String') {
-        throw new Error(
-          'Map/HashMap/Dictionary left generic type only support java.String'
-        )
-      }
-      if (rg instanceof Entity) {
-        const renamed = this.deps.add(rg.fullClsName, rg.infName)
+      },
+      onGenericOneEnum: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
         method.args.push({
           name,
-          type: `${tsType}<string, ${renamed}`,
+          type: `${t.tsType}<${clsName}>`,
         })
-      } else if (rg instanceof Enum) {
-        const renamed = this.deps.add(rg.fullClsName, rg.clsName)
+      },
+      onGenericOneEntity: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
         method.args.push({
           name,
-          type: `${tsType}<string, ${renamed}`,
+          type: `${t.tsType}<${clsName}>`,
         })
-      } else {
+      },
+      onGenericTwoBasic: (t) => {
         method.args.push({
           name,
-          type: `${tsType}<string, ${rg.tsType}>`,
+          type: `${t.tsType}<string, ${t.generic.tsType}>`,
         })
-      }
-    }
+      },
+      onGenericTwoEnum: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
+        method.args.push({
+          name,
+          type: `${t.tsType}<string, ${clsName}>`,
+        })
+      },
+      onGenericTwoEntity: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
+        method.args.push({
+          name,
+          type: `${t.tsType}<string, ${clsName}>`,
+        })
+      },
+    })
 
     return this
   }
@@ -123,60 +104,41 @@ export class Service extends Lang {
     // get current method meta data
     const method = this._methods[this._curMethodName]
 
-    if (type instanceof Enum) {
-      const renamed = this.deps.add(type.fullClsName, type.clsName)
-      method.ret = renamed
-      return this
-    }
-
-    if (type instanceof Entity) {
-      const renameClsName = this.deps.add(type.fullClsName, type.clsName)
-      method.ret = renameClsName
-      return this
-    }
-
-    const { tsType, generic } = type()
-
-    // basic type, not generic type
-    if (!generic || generic.length === 0) {
-      method.ret = tsType
-      return this
-    }
-
-    // 如果只有一个泛型
-    if (generic.length === 1) {
-      const g = generic[0]
-      if (g instanceof Entity) {
-        const rename = this.deps.add(g.fullClsName, g.infName)
-        method.ret = `${tsType}<${rename}>`
-      } else if (g instanceof Enum) {
-        const rename = this.deps.add(g.fullClsName, g.clsName)
-        method.ret = `${tsType}<${rename}>`
-      } else {
-        method.ret = `${tsType}<${g.tsType}>`
-      }
-      return this
-    }
-
-    // 如果有两个泛型
-    if (generic.length === 2) {
-      const [lg, rg] = generic
-      if (lg instanceof Entity || lg.javaType !== 'java.String') {
-        throw new Error(
-          'Map/HashMap/Dictionary left generic type only support java.String'
-        )
-      }
-
-      if (rg instanceof Entity) {
-        const rename = this.deps.add(rg.fullClsName, rg.infName)
-        method.ret = `${tsType}<string, ${rename}>`
-      } else if (rg instanceof Enum) {
-        const rename = this.deps.add(rg.fullClsName, rg.clsName)
-        method.ret = `${tsType}<string, ${rename}>`
-      } else {
-        method.ret = `${tsType}<string, ${rg.tsType}>`
-      }
-    }
+    parseTypeMeta(type, {
+      onBasic(t) {
+        method.ret = t.tsType
+      },
+      onEnum: (t) => {
+        const renamed = this.deps.add(t.fullClsName, t.clsName)
+        method.ret = renamed
+      },
+      onEntity: (t) => {
+        const renameClsName = this.deps.add(t.fullClsName, t.infName)
+        method.ret = renameClsName
+      },
+      onGenericOneBasic: (t) => {
+        method.ret = `${t.tsType}<${t.generic.tsType}>`
+      },
+      onGenericOneEnum: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
+        method.ret = `${t.tsType}<${clsName}>`
+      },
+      onGenericOneEntity: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
+        method.ret = `${t.tsType}<${clsName}>`
+      },
+      onGenericTwoBasic: (t) => {
+        method.ret = `${t.tsType}<string, ${t.generic.tsType}>`
+      },
+      onGenericTwoEnum: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
+        method.ret = `${t.tsType}<string, ${clsName}>`
+      },
+      onGenericTwoEntity: (t) => {
+        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
+        method.ret = `${t.tsType}<string, ${clsName}>`
+      },
+    })
 
     return this
   }

@@ -1,5 +1,6 @@
 import { IType } from '../types'
 import { Entity } from './entity'
+import { Enum } from './enum'
 
 // ~~~~~~~~~ Boolean && boolean ~~~~~~~~~~~~~~~
 export function Boolean() {
@@ -138,8 +139,8 @@ export function Character(): IType {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~ container ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-export function List(type: Entity | (() => IType)): () => IType {
-  const generic = type instanceof Entity ? type : type()
+export function List(type: Entity | Enum | (() => IType)): () => IType {
+  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.List',
@@ -147,8 +148,8 @@ export function List(type: Entity | (() => IType)): () => IType {
   })
 }
 
-export function Set(type: Entity | (() => IType)): () => IType {
-  const generic = type instanceof Entity ? type : type()
+export function Set(type: Entity | Enum | (() => IType)): () => IType {
+  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.Set',
@@ -156,8 +157,8 @@ export function Set(type: Entity | (() => IType)): () => IType {
   })
 }
 
-export function Collection(type: Entity | (() => IType)): () => IType {
-  const generic = type instanceof Entity ? type : type()
+export function Collection(type: Entity | Enum | (() => IType)): () => IType {
+  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.Collection',
@@ -165,8 +166,8 @@ export function Collection(type: Entity | (() => IType)): () => IType {
   })
 }
 
-export function Iterator(type: Entity | (() => IType)): () => IType {
-  const generic = type instanceof Entity ? type : type()
+export function Iterator(type: Entity | Enum | (() => IType)): () => IType {
+  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.Iterator',
@@ -185,29 +186,35 @@ export function Enumeration(type: Entity | (() => IType)): () => IType {
 
 export function HashMap(
   leftType: Entity | (() => IType),
-  rightType: Entity | (() => IType)
+  rightType: Entity | Enum | (() => IType)
 ): () => IType {
+  let rg: Entity | Enum | IType
+  if (rightType instanceof Enum || rightType instanceof Entity) {
+    rg = rightType
+  } else {
+    rg = rightType()
+  }
   return () => ({
     tsType: 'Map',
     javaType: 'java.HashMap',
-    generic: [
-      leftType instanceof Entity ? leftType : leftType(),
-      rightType instanceof Entity ? rightType : rightType(),
-    ],
+    generic: [leftType instanceof Entity ? leftType : leftType(), rg],
   })
 }
 
 export function Map(
   leftType: Entity | (() => IType),
-  rightType: Entity | (() => IType)
+  rightType: Entity | Enum | (() => IType)
 ): () => IType {
+  let rg: Entity | Enum | IType
+  if (rightType instanceof Enum || rightType instanceof Entity) {
+    rg = rightType
+  } else {
+    rg = rightType()
+  }
   return () => ({
     tsType: 'Map',
     javaType: 'java.Map',
-    generic: [
-      leftType instanceof Entity ? leftType : leftType(),
-      rightType instanceof Entity ? rightType : rightType(),
-    ],
+    generic: [leftType instanceof Entity ? leftType : leftType(), rg],
   })
 }
 
@@ -229,5 +236,110 @@ export function Currency(): IType {
   return {
     tsType: 'string',
     javaType: 'java.Currency',
+  }
+}
+
+export interface ITypeCallBack {
+  onBasic(param: IType): void
+  onEntity(param: Entity): void
+  onEnum(parma: Enum): void
+  onGenericOneBasic(param: {
+    tsType: string
+    javaType: string
+    generic: { tsType: string; javaType: string }
+  }): void
+  onGenericOneEntity(param: {
+    tsType: string
+    javaType: string
+    generic: Entity
+  }): void
+  onGenericOneEnum(param: {
+    tsType: string
+    javaType: string
+    generic: Enum
+  }): void
+
+  onGenericTwoBasic(param: {
+    tsType: string
+    javaType: string
+    generic: { tsType: string; javaType: string }
+  }): void
+  onGenericTwoEnum(param: {
+    tsType: string
+    javaType: string
+    generic: Enum
+  }): void
+  onGenericTwoEntity(param: {
+    tsType: string
+    javaType: string
+    generic: Entity
+  }): void
+}
+
+export function parseTypeMeta(
+  type: Entity | Enum | (() => IType),
+  cb: ITypeCallBack
+) {
+  if (type instanceof Entity) {
+    cb.onEntity(type)
+    return
+  }
+
+  if (type instanceof Enum) {
+    cb.onEnum(type)
+    return
+  }
+
+  const { tsType, javaType, generic } = type()
+
+  if (!generic || generic.length === 0) {
+    cb.onBasic({ tsType, javaType })
+    return
+  }
+
+  if (generic.length === 1) {
+    const g = generic[0]
+    if (g instanceof Entity) {
+      cb.onGenericOneEntity({ tsType, javaType, generic: g })
+    } else if (g instanceof Enum) {
+      cb.onGenericOneEnum({ tsType, javaType, generic: g })
+    } else {
+      cb.onGenericOneBasic({ tsType, javaType, generic: g })
+    }
+    return
+  }
+
+  if (generic.length === 2) {
+    const [lg, rg] = generic
+
+    if (
+      lg instanceof Entity ||
+      lg instanceof Enum ||
+      lg.javaType !== 'java.String'
+    ) {
+      throw new Error(
+        'Map/HashMap/Dictionary left generic type only support java.String'
+      )
+    }
+
+    if (rg instanceof Entity) {
+      cb.onGenericTwoEntity({
+        tsType,
+        javaType,
+        generic: rg,
+      })
+    } else if (rg instanceof Enum) {
+      cb.onGenericTwoEnum({
+        tsType,
+        javaType,
+        generic: rg,
+      })
+    } else {
+      cb.onGenericTwoBasic({
+        tsType,
+        javaType,
+        generic: rg,
+      })
+    }
   }
 }
