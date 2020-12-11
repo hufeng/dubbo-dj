@@ -34,8 +34,9 @@ export default class ServiceEmitter extends Emitter {
       for (let arg of meta.args) {
         args.push(`${arg.name}: ${arg.type}`)
       }
+      const retType = meta.ret ? meta.ret.tsType : 'void'
       methods.push(`
-        ${name}(${args.join()})${meta.ret ? ':' + meta.ret : 'void'} {
+       async ${name}(${args.join()}): Promise<${retType}> {
           throw new Error('Method not implemented.')
         }
       `)

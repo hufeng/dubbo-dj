@@ -10,6 +10,10 @@
 {{="\n\n"}}
 
 export default class {{=it.serviceName + 'Impl'}} extends {{=it.serviceName}}{
+  constructor() {
+    super()
+  }
+  {{="\n\n"}}
   {{~it.methods:method}}
   {{=method}}
   {{~}}

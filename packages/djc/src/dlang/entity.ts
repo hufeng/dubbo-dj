@@ -45,6 +45,7 @@ export class Entity extends Lang {
         })
       },
       onGenericOneBasic: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         // 泛型的类型为基本类型
         this.fields.push({
           name,
@@ -56,7 +57,7 @@ export class Entity extends Lang {
         })
       },
       onGenericOneEntity: (t) => {
-        this.deps.add('@dubbo/dj-sugar', 's')
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
         this.fields.push({
           name,
@@ -68,7 +69,7 @@ export class Entity extends Lang {
         })
       },
       onGenericOneEnum: (t) => {
-        this.deps.add('@dubbo/dj-sugar', 's')
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
         this.fields.push({
           name,
@@ -80,6 +81,7 @@ export class Entity extends Lang {
         })
       },
       onGenericTwoBasic: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         this.fields.push({
           name,
           type: {
@@ -90,6 +92,7 @@ export class Entity extends Lang {
         })
       },
       onGenericTwoEntity: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
         this.fields.push({
           name,
@@ -101,6 +104,7 @@ export class Entity extends Lang {
         })
       },
       onGenericTwoEnum: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
         this.fields.push({
           name,

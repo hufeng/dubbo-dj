@@ -25,7 +25,7 @@ export type IMethodArgs = {
 
 export interface IMethodMeta {
   args: Array<IMethodArgs>
-  ret: string
+  ret: { tsType: string; javaType: string }
 }
 
 export interface IBuildParam {

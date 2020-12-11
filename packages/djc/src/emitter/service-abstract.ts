@@ -21,17 +21,29 @@ export default class AbstractService extends Emitter {
 
   get code() {
     const methods = []
+    const proxyMethods = []
 
     for (let [name, meta] of Object.entries(this.service._methods)) {
       const args = []
+      const argNames = []
+
       for (let arg of meta.args) {
+        argNames.push(arg.name)
         args.push(`${arg.name}: ${arg.type}`)
       }
-      methods.push(
-        `abstract ${name}(${args.join()})${
-          meta.ret ? ':' + meta.ret : ':void'
-        };`
-      )
+      if (meta.ret) {
+        const { tsType, javaType } = meta.ret
+        const retType = tsType ? tsType : 'void'
+        methods.push(`abstract ${name}(${args.join()}):Promise<${retType}>;`)
+        proxyMethods.push(
+          `${name}: (${args.join()}) => {const res = this.${name}(${argNames.join()}); return ${javaType}}`
+        )
+      } else {
+        methods.push(`abstract ${name}(${args.join()}):Promise<void>;`)
+        proxyMethods.push(
+          `${name}: (${args.join()}) => this.${name}(${argNames.join()})`
+        )
+      }
     }
 
     return abstractServiceDot({
@@ -43,6 +55,7 @@ export default class AbstractService extends Emitter {
       group: this.service._group,
       version: this.service._version,
       methods: methods,
+      proxyMethods: proxyMethods,
     })
   }
 }

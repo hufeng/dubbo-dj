@@ -35,6 +35,15 @@ const userService = dl
   .arg('user', user)
   .arg('users', dl.List(user))
   .ret(user)
+  .method('add')
+  .arg('x', dl.int)
+  .arg('y', dl.int)
+  .ret(dl.int)
+  .method('getColor')
+  .arg('color', color)
+  .ret(color)
+  .method('getUsers')
+  .ret(dl.List(user))
   .ok()
 
 const enumService = dl

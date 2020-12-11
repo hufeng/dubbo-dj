@@ -30,7 +30,7 @@ export default class ConsumerService extends Emitter {
       }
       methods.push(`
         ${name}(${args.join()}): TDubboCallResult<${
-        meta.ret ? meta.ret : 'void'
+        meta.ret ? meta.ret.tsType : 'void'
       }>;
       `)
       methodNames.push(name)

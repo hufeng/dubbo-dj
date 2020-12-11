@@ -6,7 +6,7 @@ import Deps from '../dlang/deps'
 import { fmt } from './fmt'
 
 const log = debug(`dubbo:dj:emitter：say ~`)
-const relWhiteList = ['js-to-java', '@dubbo/dj-sugar']
+const relWhiteList = ['js-to-java', '@dubbo/sugar']
 
 const fileType = {
   ts: 'ts',
@@ -30,10 +30,7 @@ export default abstract class Emitter {
   imports(deps: Deps) {
     const imports = []
     for (let { fullClassName, importName, isDefault } of deps.imports) {
-      if (
-        relWhiteList.includes(fullClassName) ||
-        fullClassName.startsWith('.')
-      ) {
+      if (relWhiteList.includes(fullClassName)) {
         imports.push(`import ${importName} from '${fullClassName}'`)
       } else {
         let rel = this.relPath(this.fullClsName, fullClassName)

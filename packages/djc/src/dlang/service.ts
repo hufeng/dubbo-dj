@@ -3,7 +3,6 @@ import Lang from './lang'
 import { Entity } from './entity'
 import { Enum } from './enum'
 import { parseTypeMeta } from './type'
-
 export class Service extends Lang {
   _group: string = ''
   _version: string = '1.0.0'
@@ -100,43 +99,80 @@ export class Service extends Lang {
     return this
   }
 
-  ret(type: Entity | Enum | (() => IType)) {
+  ret(type?: Entity | Enum | (() => IType)) {
+    if (!type) {
+      return this
+    }
+
     // get current method meta data
     const method = this._methods[this._curMethodName]
 
     parseTypeMeta(type, {
       onBasic(t) {
-        method.ret = t.tsType
+        method.ret = {
+          tsType: t.tsType,
+          javaType: `${t.javaType}(res)`,
+        }
       },
       onEnum: (t) => {
-        const renamed = this.deps.add(t.fullClsName, t.clsName)
-        method.ret = renamed
+        const clsName = this.deps.add(t.fullClsName, t.clsName)
+        method.ret = {
+          tsType: clsName,
+          javaType: `java.enum('${t.fullClsName}', ${t.clsName}[res])`,
+        }
       },
       onEntity: (t) => {
-        const renameClsName = this.deps.add(t.fullClsName, t.infName)
-        method.ret = renameClsName
+        const clsName = this.deps.add(t.fullClsName, t.infName)
+        method.ret = {
+          tsType: clsName,
+          javaType: `res.__field2java()`,
+        }
       },
       onGenericOneBasic: (t) => {
-        method.ret = `${t.tsType}<${t.generic.tsType}>`
+        this.deps.add('@dubbo/sugar', 's')
+        method.ret = {
+          tsType: `${t.tsType}<${t.generic.tsType}>`,
+          javaType: `${t.javaType}(s.$lhs(res, ${t.generic.javaType}))`,
+        }
       },
       onGenericOneEnum: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
-        method.ret = `${t.tsType}<${clsName}>`
+        method.ret = {
+          tsType: `${t.tsType}<${clsName}>`,
+          javaType: `${t.javaType}(s.$lhs(res))`,
+        }
       },
       onGenericOneEntity: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
-        method.ret = `${t.tsType}<${clsName}>`
+        method.ret = {
+          tsType: `${t.tsType}<${clsName}>`,
+          javaType: `${t.javaType}(s.$lhs(res))`,
+        }
       },
       onGenericTwoBasic: (t) => {
-        method.ret = `${t.tsType}<string, ${t.generic.tsType}>`
+        this.deps.add('@dubbo/sugar', 's')
+        method.ret = {
+          tsType: `${t.tsType}<string, ${t.generic.tsType}>`,
+          javaType: `s.$mhs(res, ${t.generic.javaType})`,
+        }
       },
       onGenericTwoEnum: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
-        method.ret = `${t.tsType}<string, ${clsName}>`
+        method.ret = {
+          tsType: `${t.tsType}<string, ${clsName}>`,
+          javaType: `s.$mhs(res)`,
+        }
       },
       onGenericTwoEntity: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
-        method.ret = `${t.tsType}<string, ${clsName}>`
+        method.ret = {
+          tsType: `${t.tsType}<string, ${clsName}>`,
+          javaType: `s.$mhs(res)`,
+        }
       },
     })
 

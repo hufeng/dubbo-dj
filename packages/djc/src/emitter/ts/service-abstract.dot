@@ -14,8 +14,16 @@ export default abstract class {{=it.serviceName}} {
   version = '{{=it.version}}';
 
   {{="\n\n"}}
+  constructor() {
+    this.methods = {
+      {{=it.proxyMethods}}
+    }
+  }
+
+  {{="\n\n"}}
   
   {{~it.methods:method}}
   {{=method}}
+  {{="\n\n"}}
   {{~}}
 }

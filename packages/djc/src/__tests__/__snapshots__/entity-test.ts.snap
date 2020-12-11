@@ -7,7 +7,7 @@ exports[`test user entity 1`] = `
  */
 
 import java from 'js-to-java'
-import s from '@dubbo/dj-sugar'
+import s from '@dubbo/sugar'
 import Color from '../enum/Color'
 import IAddr from '../entity/Addr'
 
