@@ -60,9 +60,9 @@ import { dl } from '@dubbo/dj'
 
 const user = dl
   .entity('org.apache.dubbo.entity.User')
-  .field('id', dl.Integer, 'user id')
-  .field('name', dl.String, 'user id')
-  .field('email', dl.String, 'user id')
+  .field('id', dl.Integer)
+  .field('name', dl.String)
+  .field('email', dl.String)
   .ok()
 ```
 
@@ -247,6 +247,7 @@ export const userService = dl
   .group('')
   .version('1.0.0')
   .method('sayHello')
+  <!-- prettier-ignore -->
     .arg('user', user)
     .ret(user)
   .method('sayWorld')
