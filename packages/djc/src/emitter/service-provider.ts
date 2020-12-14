@@ -6,7 +6,7 @@ import { serviceDot } from './ts'
 
 const log = debug(`dubbo:dj:service:say ~`)
 
-export default class ServiceEmitter extends Emitter {
+export default class ServiceProviderEmitter extends Emitter {
   constructor(
     public service: Service,
     lang: 'ts' | 'go' | 'java',

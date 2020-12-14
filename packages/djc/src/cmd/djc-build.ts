@@ -4,7 +4,7 @@ import {
   AbstractServiceEmitter,
   ConsumerEmitter,
   EntityEmitter,
-  ServiceEmitter,
+  ServiceProviderEmitter,
 } from '../emitter'
 import EnumEmitter from '../emitter/enum'
 import { IConfigure } from '../types'
@@ -66,7 +66,7 @@ export async function djc(build: IConfigure) {
       }
 
       if (type.includes('serviceImpl')) {
-        const emitService = new ServiceEmitter(s, l)
+        const emitService = new ServiceProviderEmitter(s, l)
         emitService.writeCode()
       }
     }
