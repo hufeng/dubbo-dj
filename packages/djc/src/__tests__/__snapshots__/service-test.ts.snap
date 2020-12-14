@@ -23,15 +23,16 @@ exports[`test generic service 1`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
+import s from '@dubbo/sugar'
 import { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
 import java from 'js-to-java'
-import s from '@dubbo/sugar'
 
 export default abstract class GenService {
   dubboInterface = 'org.apache.dubbo.service.GenService'
   group = 'dubbo'
   version = '1.0.0'
+
   methods = {
     sayHello: (name: Array<string>) => this.sayHello(name),
     sayWorld: async (user: Array<IUser>, color: Color) => {
@@ -103,9 +104,9 @@ exports[`test user service 2`] = `
  */
 
 import User, { IUser } from '../../domain/User'
+import s from '@dubbo/sugar'
 import java from 'js-to-java'
 import Color from '../../enum/Color'
-import s from '@dubbo/sugar'
 
 /**
  * 用户服务
@@ -115,6 +116,7 @@ export default abstract class UserService {
   dubboInterface = 'org.apache.dubbo.service.UserService'
   group = 'dubbo'
   version = '1.0.0'
+
   methods = {
     sayHello: async (name: string, user: IUser, users: Array<IUser>) => {
       const res = await this.sayHello(name, user, users)
@@ -166,7 +168,6 @@ exports[`test user service 3`] = `
  */
 
 import { Dubbo, TDubboCallResult } from 'apache-dubbo-js'
-import { argumentMap } from 'interpret-util'
 import { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
 
@@ -189,15 +190,6 @@ export interface IUserService {
 
   getUsers(): TDubboCallResult<Array<IUser>>
 }
-
-export const UserServiceWrapper = {
-  sayHello: argumentMap,
-  sayWorld: argumentMap,
-  add: argumentMap,
-  getColor: argumentMap,
-  getUsers: argumentMap,
-}
-
 /**
  * 用户服务
  */
@@ -205,7 +197,39 @@ export const UserServiceWrapper = {
 export function UserService(dubbo: Dubbo): IUserService {
   return dubbo.proxyService<IUserService>({
     dubboInterface: 'org.apache.dubbo.service.UserService',
-    methods: UserServiceWrapper,
+    methods: {
+      sayHello(
+        name: string,
+        user: IUser,
+        users: Array<IUser>
+      ): TDubboCallResult<string> {
+        return [
+          java.String(name),
+          new User(user).__fields2java(),
+          java.List(s.$lhs(users)),
+        ]
+      },
+      sayWorld(
+        name: string,
+        user: IUser,
+        users: Array<IUser>
+      ): TDubboCallResult<IUser> {
+        return [
+          java.String(name),
+          new User(user).__fields2java(),
+          java.List(s.$lhs(users)),
+        ]
+      },
+      add(x: number, y: number): TDubboCallResult<number> {
+        return [java.int(x), java.int(y)]
+      },
+      getColor(color: Color): TDubboCallResult<Color> {
+        return [java.enum('org.apache.dubbo.enum.Color', Color[color])]
+      },
+      getUsers(): TDubboCallResult<Array<IUser>> {
+        return []
+      },
+    },
   })
 }
 "

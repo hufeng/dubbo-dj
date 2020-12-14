@@ -29,7 +29,7 @@ export default class AbstractService extends Emitter {
 
       for (let arg of meta.args) {
         argNames.push(arg.name)
-        args.push(`${arg.name}: ${arg.type}`)
+        args.push(`${arg.name}: ${arg.tsType}`)
       }
       if (meta.ret) {
         const { tsType, javaType } = meta.ret

@@ -3,7 +3,7 @@ import {
   AbstractServiceEmitter,
   ConsumerEmitter,
   fmt,
-  ServiceEmitter,
+  ServiceProviderEmitter,
 } from '../emitter'
 import AbstractService from '../emitter/service-abstract'
 
@@ -68,7 +68,7 @@ const gService = dl
   .ok()
 
 it('test user service', () => {
-  const serviceEmitter = new ServiceEmitter(userService, 'ts')
+  const serviceEmitter = new ServiceProviderEmitter(userService, 'ts')
   expect(fmt(serviceEmitter.code)).toMatchSnapshot()
 
   const abstractEmitter = new AbstractService(userService, 'ts')
@@ -79,7 +79,7 @@ it('test user service', () => {
 })
 
 it('test enum service', () => {
-  const serviceEmitter = new ServiceEmitter(enumService, 'ts')
+  const serviceEmitter = new ServiceProviderEmitter(enumService, 'ts')
   expect(fmt(serviceEmitter.code)).toMatchSnapshot()
 })
 

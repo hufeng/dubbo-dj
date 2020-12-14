@@ -32,7 +32,7 @@ export default class ServiceProviderEmitter extends Emitter {
       const args = []
 
       for (let arg of meta.args) {
-        args.push(`${arg.name}: ${arg.type}`)
+        args.push(`${arg.name}: ${arg.tsType}`)
       }
       const retType = meta.ret ? meta.ret.tsType : 'void'
       methods.push(`

@@ -20,7 +20,8 @@ export type TServiceMethod = {
 
 export type IMethodArgs = {
   name: string
-  type: string
+  tsType: string
+  javaType: string
 }
 
 export interface IMethodMeta {

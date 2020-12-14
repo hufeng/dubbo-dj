@@ -2,24 +2,14 @@
 
 {{="\n\n"}}
 import {Dubbo, TDubboCallResult} from 'apache-dubbo-js';
-import {argumentMap} from 'interpret-util';
 {{=it.imports}}
 {{="\n\n"}}
 
 export interface {{=it.infName}} {
-  {{~it.methods:m}}
+  {{~it.methodsInterface:m}}
   {{=m}}
   {{~}}
 }
-
-{{="\n\n"}}
-export const {{=it.serviceName}}Wrapper = {
-  {{~it.methodNames:n}}
-  {{=n}}:argumentMap,
-  {{~}}
-}
-{{="\n\n"}}
-
 
 {{=it.comment}}
 
@@ -29,7 +19,12 @@ export const {{=it.serviceName}}Wrapper = {
 export function {{=it.serviceName}}(dubbo: Dubbo): {{=it.infName}}{
  return dubbo.proxyService<{{=it.infName}}>({
     dubboInterface: '{{=it.service}}',
-    methods: {{=it.serviceName}}Wrapper,
+    methods: {
+      {{~it.methods:m}}
+      {{=m}},
+      {{~}}
+      {{="\n"}}
+    } 
   });
 }
 

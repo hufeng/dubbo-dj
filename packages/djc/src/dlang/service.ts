@@ -43,31 +43,45 @@ export class Service extends Lang {
       onBasic(t) {
         method.args.push({
           name,
-          type: t.tsType,
+          tsType: t.tsType,
+          javaType: `${t.javaType}(${name})`,
         })
       },
       onEnum: (t) => {
         const clsName = this.deps.add(t.fullClsName, t.clsName)
-        method.args.push({ name, type: clsName })
+        method.args.push({
+          name,
+          tsType: clsName,
+          javaType: `java.enum('${t.fullClsName}', ${t.clsName}[${name}])`,
+        })
       },
       onEntity: (t) => {
         const infName = this.deps.add(t.fullClsName, t.infName, false)
-        method.args.push({ name, type: infName })
+        const clsName = this.deps.add(t.fullClsName, t.clsName)
+        method.args.push({
+          name,
+          tsType: infName,
+          javaType: `new ${clsName}(${name}).__fields2java()`,
+        })
       },
       onGenericOneBasic: (t) => {
         method.args.push({
           name,
-          type: `${t.tsType}<${t.generic.tsType}>`,
+          tsType: `${t.tsType}<${t.generic.tsType}>`,
+          javaType: `${t.javaType}(s.$lhs(${name}, ${t.generic.javaType}))`,
         })
       },
       onGenericOneEnum: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
         method.args.push({
           name,
-          type: `${t.tsType}<${clsName}>`,
+          tsType: `${t.tsType}<${clsName}>`,
+          javaType: `${t.javaType}(s.$lhs(${name}))`,
         })
       },
       onGenericOneEntity: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const infName = this.deps.add(
           t.generic.fullClsName,
           t.generic.infName,
@@ -75,23 +89,27 @@ export class Service extends Lang {
         )
         method.args.push({
           name,
-          type: `${t.tsType}<${infName}>`,
+          tsType: `${t.tsType}<${infName}>`,
+          javaType: `${t.javaType}(s.$lhs(${name}))`,
         })
       },
       onGenericTwoBasic: (t) => {
         method.args.push({
           name,
-          type: `${t.tsType}<string, ${t.generic.tsType}>`,
+          tsType: `${t.tsType}<string, ${t.generic.tsType}>`,
+          javaType: `s.$mhs(${name}, ${t.generic.javaType})`,
         })
       },
       onGenericTwoEnum: (t) => {
         const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
         method.args.push({
           name,
-          type: `${t.tsType}<string, ${clsName}>`,
+          tsType: `${t.tsType}<string, ${clsName}>`,
+          javaType: `s.$mhs(${name})`,
         })
       },
       onGenericTwoEntity: (t) => {
+        this.deps.add('@dubbo/sugar', 's')
         const infName = this.deps.add(
           t.generic.fullClsName,
           t.generic.infName,
@@ -99,7 +117,8 @@ export class Service extends Lang {
         )
         method.args.push({
           name,
-          type: `${t.tsType}<string, ${infName}>`,
+          tsType: `${t.tsType}<string, ${infName}>`,
+          javaType: `s.$mhs(${name})`,
         })
       },
     })

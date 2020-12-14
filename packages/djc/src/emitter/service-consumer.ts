@@ -20,20 +20,29 @@ export default class ConsumerService extends Emitter {
   }
 
   get code() {
-    const methods = []
     const methodNames = []
+    const methodsInterface = []
+    const methods = []
 
     for (let [name, meta] of Object.entries(this.service._methods)) {
-      const args = []
-      for (let arg of meta.args) {
-        args.push(`${arg.name}: ${arg.type}`)
-      }
-      methods.push(`
-        ${name}(${args.join()}): TDubboCallResult<${
-        meta.ret ? meta.ret.tsType : 'void'
-      }>;
-      `)
       methodNames.push(name)
+
+      // args
+      const args = []
+      const argsJava = []
+      for (let arg of meta.args) {
+        args.push(`${arg.name}: ${arg.tsType}`)
+        argsJava.push(`${arg.javaType}`)
+      }
+      const retType = meta.ret ? meta.ret.tsType : 'void'
+      methodsInterface.push(`
+        ${name}(${args.join()}): TDubboCallResult<${retType}>;
+      `)
+      methods.push(`
+        ${name}(${args.join()}): TDubboCallResult<${retType}> {
+          return [${argsJava.join()}]
+        }
+      `)
     }
 
     return consumerServiceDot({
@@ -46,7 +55,8 @@ export default class ConsumerService extends Emitter {
       infName: this.service.infName,
       service: this.service.fullClsName,
       serviceName: this.service.clsName,
-      methods: methods,
+      methodsInterface,
+      methods,
       methodNames,
     })
   }
