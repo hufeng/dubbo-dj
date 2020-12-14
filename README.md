@@ -247,12 +247,11 @@ export const userService = dl
   .group('')
   .version('1.0.0')
   .method('sayHello')
-  <!-- prettier-ignore -->
-    .arg('user', user)
-    .ret(user)
+  .arg('user', user)
+  .ret(user)
   .method('sayWorld')
-    .arg('name', dl.String)
-    .ret(dl.String)
+  .arg('name', dl.String)
+  .ret(dl.String)
   .ok()
 ```
 
