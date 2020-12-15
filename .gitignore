@@ -106,3 +106,7 @@ dist
 .Ds_Store
 
 lib
+
+dubbo
+
+dubbo-dsl
