@@ -17,16 +17,20 @@ export class Enum extends Lang {
   }
 }
 
+class EnumBuilder {
+  constructor(private e: Enum) {}
+
+  field(name: string, val: number | string, comment?: string) {
+    this.e.field(name, val, comment)
+    return this
+  }
+
+  ok() {
+    return this.e
+  }
+}
+
 export default function enumer(cls: string, comment?: string) {
   const e = new Enum(cls, comment)
-  return {
-    field(name: string, val: number | string, comment?: string) {
-      e.field(name, val, comment)
-      return this
-    },
-
-    ok() {
-      return e
-    },
-  }
+  return new EnumBuilder(e)
 }

@@ -12,10 +12,15 @@ export default abstract class {{=it.serviceName}} {
   dubboInterface = '{{=it.service}}';
   group = '{{=it.group}}';
   version = '{{=it.version}}';
+  {{="\n\n"}}
+  methods = {
+    {{=it.proxyMethods}}
+  }
 
   {{="\n\n"}}
   
   {{~it.methods:method}}
   {{=method}}
+  {{="\n\n"}}
   {{~}}
 }

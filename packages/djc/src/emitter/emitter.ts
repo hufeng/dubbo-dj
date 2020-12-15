@@ -6,7 +6,7 @@ import Deps from '../dlang/deps'
 import { fmt } from './fmt'
 
 const log = debug(`dubbo:dj:emitter：say ~`)
-const relWhiteList = ['js-to-java', '@dubbo/dj-sugar']
+const relWhiteList = ['js-to-java', '@dubbo/sugar']
 
 const fileType = {
   ts: 'ts',
@@ -27,24 +27,42 @@ export default abstract class Emitter {
     }`
   }
 
-  imports(deps: Deps) {
+  imports(
+    deps: Deps,
+    { filterDefault, filterWhiteList } = {
+      filterDefault: false,
+      filterWhiteList: false,
+    }
+  ) {
     const imports = []
-    for (let { fullClassName, importName, isDefault } of deps.imports) {
-      if (
-        relWhiteList.includes(fullClassName) ||
-        fullClassName.startsWith('.')
-      ) {
-        imports.push(`import ${importName} from '${fullClassName}'`)
+    for (let [fullClassName, { defaultImport, specifiers }] of Object.entries(
+      deps.imports
+    )) {
+      if (relWhiteList.includes(fullClassName)) {
+        if (!filterWhiteList) {
+          imports.push(`import ${defaultImport} from '${fullClassName}'`)
+        }
       } else {
         let rel = this.relPath(this.fullClsName, fullClassName)
         if (!rel.startsWith('./') && !rel.startsWith('../')) {
           rel = './' + rel
         }
-        if (isDefault) {
-          imports.push(`import ${importName} from '${rel}'`)
-        } else {
-          imports.push(`import {${importName}} from '${rel}'`)
+
+        let importName = ''
+        if (
+          (defaultImport !== '' && !filterDefault) ||
+          // enum
+          specifiers.length === 0
+        ) {
+          importName += defaultImport + ''
         }
+        if (specifiers.length > 0) {
+          if (importName) {
+            importName += ','
+          }
+          importName += `{${specifiers.join()}}`
+        }
+        imports.push(`import ${importName} from '${rel}'`)
       }
     }
     return imports

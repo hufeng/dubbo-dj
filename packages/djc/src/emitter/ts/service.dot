@@ -10,12 +10,7 @@
 {{="\n\n"}}
 
 export default class {{=it.serviceName + 'Impl'}} extends {{=it.serviceName}}{
-  dubboInterface = '{{=it.service}}';
-  group = '{{=it.group}}';
-  version = '{{=it.version}}';
-
   {{="\n\n"}}
-  
   {{~it.methods:method}}
   {{=method}}
   {{~}}

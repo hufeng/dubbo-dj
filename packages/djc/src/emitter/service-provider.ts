@@ -6,7 +6,7 @@ import { serviceDot } from './ts'
 
 const log = debug(`dubbo:dj:service:say ~`)
 
-export default class ServiceEmitter extends Emitter {
+export default class ServiceProviderEmitter extends Emitter {
   constructor(
     public service: Service,
     lang: 'ts' | 'go' | 'java',
@@ -27,14 +27,16 @@ export default class ServiceEmitter extends Emitter {
 
   get code() {
     const methods = []
-    const args = []
 
     for (let [name, meta] of Object.entries(this.service._methods)) {
+      const args = []
+
       for (let arg of meta.args) {
-        args.push(`${arg.name}: ${arg.type}`)
+        args.push(`${arg.name}: ${arg.tsType}`)
       }
+      const retType = meta.ret ? meta.ret.tsType : 'void'
       methods.push(`
-        ${name}(${args.join()})${meta.ret ? ':' + meta.ret : 'void'} {
+       async ${name}(${args.join()}): Promise<${retType}> {
           throw new Error('Method not implemented.')
         }
       `)
@@ -43,11 +45,11 @@ export default class ServiceEmitter extends Emitter {
     return serviceDot({
       mott: this.mott,
       comment: this.service.comment,
-      imports: this.imports(this.service.deps).join(';'),
-      service: this.service.fullClsName,
+      imports: this.imports(this.service.deps, {
+        filterDefault: true,
+        filterWhiteList: true,
+      }).join(';'),
       serviceName: this.service.clsName,
-      group: this.service._group,
-      version: this.service._version,
       methods: methods,
     })
   }

@@ -36,7 +36,7 @@ export default class {{=it.clsName}} {
   {{="\n\n"}}
 
   __fields2java() {
-    java('{{=it.cls}}', {
+    return java('{{=it.cls}}', {
       {{~it.fields:field}}
       {{=field.name}}:{{=field.type.javaType}},
       {{~}}
