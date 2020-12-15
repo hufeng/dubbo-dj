@@ -8,3 +8,13 @@ clean-dj:
 
 link: build
 	cd ./packages/djc && npm link
+
+build-ui: clean-ui
+	npx tsc --project ./packages/djc-ui/tsconfig.json
+	@echo "build djc-ui successfully ❤️"
+
+clean-ui:
+	rm -rf ./packages/djc-ui/lib
+
+link-ui: build-ui
+	cd ./packages/djc-ui && npm link
