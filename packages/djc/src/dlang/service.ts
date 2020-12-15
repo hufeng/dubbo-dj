@@ -11,6 +11,7 @@ export class Service extends Lang {
 
   constructor(fullClsName: string, comment?: string) {
     super(fullClsName, comment)
+    this.deps.add('js-to-java', 'java')
   }
 
   group(group: string) {
@@ -130,9 +131,6 @@ export class Service extends Lang {
     if (!type) {
       return this
     }
-
-    this.deps.add('js-to-java', 'java')
-
     // get current method meta data
     const method = this._methods[this._curMethodName]
 

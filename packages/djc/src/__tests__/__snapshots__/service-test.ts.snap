@@ -23,10 +23,10 @@ exports[`test generic service 1`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
+import java from 'js-to-java'
 import s from '@dubbo/sugar'
 import { IUser } from '../../domain/User'
 import Color from '../../enum/Color'
-import java from 'js-to-java'
 
 export default abstract class GenService {
   dubboInterface = 'org.apache.dubbo.service.GenService'
@@ -103,9 +103,9 @@ exports[`test user service 2`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
+import java from 'js-to-java'
 import User, { IUser } from '../../domain/User'
 import s from '@dubbo/sugar'
-import java from 'js-to-java'
 import Color from '../../enum/Color'
 
 /**
@@ -168,7 +168,9 @@ exports[`test user service 3`] = `
  */
 
 import { Dubbo, TDubboCallResult } from 'apache-dubbo-js'
-import { IUser } from '../../domain/User'
+import java from 'js-to-java'
+import User, { IUser } from '../../domain/User'
+import s from '@dubbo/sugar'
 import Color from '../../enum/Color'
 
 export interface IUserService {
