@@ -5,6 +5,7 @@ import { parseTypeMeta } from './type'
 
 export class Entity extends Lang {
   fields: Array<IEntityField> = []
+
   constructor(fullClsName: string, comment?: string) {
     super(fullClsName, comment)
     this.deps.add('js-to-java', 'java')

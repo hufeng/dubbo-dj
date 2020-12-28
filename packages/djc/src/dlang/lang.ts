@@ -1,25 +1,27 @@
 import Deps from './deps'
 
 export default class Lang {
+  fullClsName: string
   clsName: string
   infName: string
+
   deps: Deps
-  _comment: string
+  comment: string
 
-  constructor(public fullClsName: string, comment?: string) {
-    this._comment = comment || ''
-
+  constructor(fullClsName: string, comment?: string) {
+    this.fullClsName = fullClsName
     this.clsName = fullClsName.split('.').pop() || ''
     this.infName = `I${this.clsName}`
 
     this.deps = new Deps()
+    this.comment = this.getComment(comment || '')
   }
 
-  get comment() {
-    return this._comment
+  getComment(comment: string) {
+    return comment
       ? `
     /**
-    * ${this._comment}
+    * ${comment}
     */`
       : ''
   }

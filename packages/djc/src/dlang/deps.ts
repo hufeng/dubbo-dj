@@ -2,7 +2,7 @@ import { getWithDef } from '../common'
 
 type fullClassName = string
 
-export interface ICount {
+export interface IDepCount {
   offset: number
   map: {
     [k in fullClassName]: {
@@ -16,7 +16,7 @@ export interface ICount {
  * collect deps
  */
 export default class Deps {
-  private map: Map<string, ICount> = new Map()
+  private map: Map<string, IDepCount> = new Map()
 
   /**
    * 添加依赖
