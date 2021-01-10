@@ -1,0 +1,33 @@
+{
+  "name": "choc",
+  "version": "0.0.1",
+  "description": "A java class viewer written in typescript.",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "ts-mocha test/**/*.test.ts",
+    "genRuntimeList": "coffee scripts/rt-list.coffee"
+  },
+  "keywords": [],
+  "author": "hsiaosiyuan0@outlook.com",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/adm-zip": "^0.4.33",
+    "@types/chai": "^4.2.14",
+    "@types/expect": "^24.3.0",
+    "@types/mkdirp": "^1.0.1",
+    "@types/mocha": "^8.2.0",
+    "chai": "^4.2.0",
+    "coffeescript": "^2.5.1",
+    "command-exists": "^1.2.9",
+    "mocha": "^8.2.1",
+    "ts-mocha": "^8.0.0",
+    "ts-node": "^9.1.1"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.1",
+    "chalk": "^4.1.0",
+    "glob": "^7.1.6",
+    "mkdirp": "^1.0.4",
+    "tempy": "^1.0.0"
+  }
+}
