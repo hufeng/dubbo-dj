@@ -7,9 +7,9 @@
 {{="\n\n"}}
 
 export interface {{=it.infName}} {
-  {{~it.fields:f}}
-    {{=f.comment}}
-    {{=f.name}}:{{=f.type.tsType}};
+  {{~it.fields:field}}
+    {{=field.comment}}
+    {{=field.name}}:{{=field.type.tsType}};
     {{="\n"}}
   {{~}}
 }

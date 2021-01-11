@@ -12,7 +12,7 @@ export class Entity extends Lang {
   }
 
   field(name: string, type: Entity | Enum | (() => IType), comment?: string) {
-    parseTypeMeta(type, {
+    parseTypeMeta(type, this.deps, {
       onBasic: (t) => {
         this.fields.push({
           name,
@@ -24,11 +24,11 @@ export class Entity extends Lang {
         })
       },
       onEntity: (t) => {
-        const clsName = this.deps.add(t.fullClsName, t.infName)
+        const infName = this.deps.add(t.fullClsName, t.infName, false)
         this.fields.push({
           name,
           type: {
-            tsType: clsName,
+            tsType: infName,
             javaType: `this.${name}.__fields2java()`,
           },
           comment: this.fieldComment(comment),
@@ -45,75 +45,24 @@ export class Entity extends Lang {
           comment: this.fieldComment(comment),
         })
       },
-      onGenericOneBasic: (t) => {
-        this.deps.add('@dubbo/sugar', 's')
-        // 泛型的类型为基本类型
+      onGenericOne: (t) => {
         this.fields.push({
           name,
           type: {
             tsType: `${t.tsType}<${t.generic.tsType}>`,
-            javaType: `${t.javaType}(s.$lhs(this.${name}, ${t.generic.javaType}))`,
-          },
-          comment: this.fieldComment(comment),
-        })
-      },
-      onGenericOneEntity: (t) => {
-        this.deps.add('@dubbo/sugar', 's')
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
-        this.fields.push({
-          name,
-          type: {
-            tsType: `${t.tsType}<${clsName}>`,
             javaType: `${t.javaType}(s.$lhs(this.${name}))`,
           },
           comment: this.fieldComment(comment),
         })
       },
-      onGenericOneEnum: (t) => {
-        this.deps.add('@dubbo/sugar', 's')
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
+      onGenericTwo: (t) => {
         this.fields.push({
           name,
           type: {
-            tsType: `${t.tsType}<${clsName}>`,
-            javaType: `${t.javaType}(s.$lhs(this.${name}))`,
+            tsType: `Map<${t.generic[0].tsType}, ${t.generic[1].tsType}>`,
+            javaType: `${t.javaType}`,
           },
           comment: this.fieldComment(comment),
-        })
-      },
-      onGenericTwoBasic: (t) => {
-        this.deps.add('@dubbo/sugar', 's')
-        this.fields.push({
-          name,
-          type: {
-            tsType: `${t.tsType}<${t.generic.tsType}>`,
-            javaType: `s.$mhs(this.${name}, ${t.generic.javaType})`,
-          },
-          comment: this.fieldComment(comment),
-        })
-      },
-      onGenericTwoEntity: (t) => {
-        this.deps.add('@dubbo/sugar', 's')
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.infName)
-        this.fields.push({
-          name,
-          type: {
-            tsType: `${t.tsType}<string, ${clsName}>`,
-            javaType: `s.$mhs(this.${name})`,
-          },
-          comment: '',
-        })
-      },
-      onGenericTwoEnum: (t) => {
-        this.deps.add('@dubbo/sugar', 's')
-        const clsName = this.deps.add(t.generic.fullClsName, t.generic.clsName)
-        this.fields.push({
-          name,
-          type: {
-            tsType: `${t.tsType}<string, ${clsName}>`,
-            javaType: `s.$mhs(this.${name})`,
-          },
-          comment: '',
         })
       },
     })

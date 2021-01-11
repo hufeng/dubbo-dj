@@ -45,5 +45,6 @@ const user = dl
 
 it('test user entity', () => {
   const emitter = new EntityEmitter(user, 'ts')
+  console.log(emitter.code)
   expect(fmt(emitter.code)).toMatchSnapshot()
 })

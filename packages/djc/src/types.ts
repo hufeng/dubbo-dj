@@ -5,7 +5,7 @@ import { Service } from './dlang/service'
 export interface IType {
   tsType: string
   javaType: string
-  generic?: Array<Entity | Enum | IType>
+  generic?: Array<Entity | Enum | (() => IType)>
 }
 
 export interface IEntityField {

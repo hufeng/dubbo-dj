@@ -1,4 +1,5 @@
 import { IType } from '../types'
+import Deps from './deps'
 import { Entity } from './entity'
 import { Enum } from './enum'
 
@@ -140,47 +141,42 @@ export function Character(): IType {
 
 // ~~~~~~~~~~~~~~~~~~~~~ container ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export function List(type: Entity | Enum | (() => IType)): () => IType {
-  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.List',
-    generic: [generic],
+    generic: [type],
   })
 }
 
 export function Set(type: Entity | Enum | (() => IType)): () => IType {
-  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.Set',
-    generic: [generic],
+    generic: [type],
   })
 }
 
 export function Collection(type: Entity | Enum | (() => IType)): () => IType {
-  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.Collection',
-    generic: [generic],
+    generic: [type],
   })
 }
 
 export function Iterator(type: Entity | Enum | (() => IType)): () => IType {
-  const generic = type instanceof Entity || type instanceof Enum ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.Iterator',
-    generic: [generic],
+    generic: [type],
   })
 }
 
 export function Enumeration(type: Entity | (() => IType)): () => IType {
-  const generic = type instanceof Entity ? type : type()
   return () => ({
     tsType: 'Array',
     javaType: 'java.Iterator',
-    generic: [generic],
+    generic: [type],
   })
 }
 
@@ -188,16 +184,10 @@ export function HashMap(
   leftType: Entity | (() => IType),
   rightType: Entity | Enum | (() => IType)
 ): () => IType {
-  let rg: Entity | Enum | IType
-  if (rightType instanceof Enum || rightType instanceof Entity) {
-    rg = rightType
-  } else {
-    rg = rightType()
-  }
   return () => ({
     tsType: 'Map',
     javaType: 'java.HashMap',
-    generic: [leftType instanceof Entity ? leftType : leftType(), rg],
+    generic: [leftType, rightType],
   })
 }
 
@@ -205,16 +195,10 @@ export function Map(
   leftType: Entity | (() => IType),
   rightType: Entity | Enum | (() => IType)
 ): () => IType {
-  let rg: Entity | Enum | IType
-  if (rightType instanceof Enum || rightType instanceof Entity) {
-    rg = rightType
-  } else {
-    rg = rightType()
-  }
   return () => ({
     tsType: 'Map',
     javaType: 'java.Map',
-    generic: [leftType instanceof Entity ? leftType : leftType(), rg],
+    generic: [leftType, rightType],
   })
 }
 
@@ -225,10 +209,7 @@ export function Dictionary(
   return () => ({
     tsType: 'Map',
     javaType: 'java.Dictionary',
-    generic: [
-      leftType instanceof Entity ? leftType : leftType(),
-      rightType instanceof Entity ? rightType : rightType(),
-    ],
+    generic: [leftType, rightType],
   })
 }
 
@@ -239,52 +220,35 @@ export function Currency(): IType {
   }
 }
 
+export interface ITypeMeta {}
 export interface ITypeCallBack {
   onBasic(param: IType): void
   onEntity(param: Entity): void
   onEnum(parma: Enum): void
-  onGenericOneBasic(param: {
+  onGenericOne(param: {
     tsType: string
     javaType: string
-    generic: { tsType: string; javaType: string }
+    generic: { tsType: string }
   }): void
-  onGenericOneEntity(param: {
+  onGenericTwo(param: {
     tsType: string
     javaType: string
-    generic: Entity
-  }): void
-  onGenericOneEnum(param: {
-    tsType: string
-    javaType: string
-    generic: Enum
-  }): void
-
-  onGenericTwoBasic(param: {
-    tsType: string
-    javaType: string
-    generic: { tsType: string; javaType: string }
-  }): void
-  onGenericTwoEnum(param: {
-    tsType: string
-    javaType: string
-    generic: Enum
-  }): void
-  onGenericTwoEntity(param: {
-    tsType: string
-    javaType: string
-    generic: Entity
+    generic: [{ tsType: string }, { tsType: string }]
   }): void
 }
 
 export function parseTypeMeta(
   type: Entity | Enum | (() => IType),
+  deps: Deps,
   cb: ITypeCallBack
 ) {
+  // current is entity
   if (type instanceof Entity) {
     cb.onEntity(type)
     return
   }
 
+  // current is Enum
   if (type instanceof Enum) {
     cb.onEnum(type)
     return
@@ -292,54 +256,76 @@ export function parseTypeMeta(
 
   const { tsType, javaType, generic } = type()
 
+  // basic type
   if (!generic || generic.length === 0) {
     cb.onBasic({ tsType, javaType })
     return
   }
 
+  // root is one generic
   if (generic.length === 1) {
     const g = generic[0]
-    if (g instanceof Entity) {
-      cb.onGenericOneEntity({ tsType, javaType, generic: g })
-    } else if (g instanceof Enum) {
-      cb.onGenericOneEnum({ tsType, javaType, generic: g })
-    } else {
-      cb.onGenericOneBasic({ tsType, javaType, generic: g })
-    }
+    cb.onGenericOne({ tsType, javaType, generic: parseGenericType(g, deps) })
     return
   }
 
+  // root is two generics
   if (generic.length === 2) {
     const [lg, rg] = generic
+    cb.onGenericTwo({
+      tsType,
+      javaType,
+      generic: [parseGenericType(lg, deps), parseGenericType(rg, deps)],
+    })
+  }
+}
 
-    if (
-      lg instanceof Entity ||
-      lg instanceof Enum ||
-      lg.javaType !== 'java.String'
-    ) {
-      throw new Error(
-        'Map/HashMap/Dictionary left generic type only support java.String'
-      )
+export function parseGenericType(
+  type: Entity | Enum | (() => IType),
+  deps: Deps
+): { tsType: string } {
+  let tsType = ''
+
+  deps.add('@dubbo/sugar', 's')
+
+  // 当前是Entity
+  if (type instanceof Entity) {
+    const infName = deps.add(type.fullClsName, type.infName, false)
+    tsType += infName
+  }
+
+  // 当前是枚举类型
+  else if (type instanceof Enum) {
+    const clsName = deps.add(type.fullClsName, type.clsName)
+    tsType += clsName
+  }
+
+  // 基本类型或者泛型
+  else {
+    let t = type()
+    // 当前是普通类型
+    if (!t.generic || t.generic.length === 0) {
+      tsType += t.tsType
     }
 
-    if (rg instanceof Entity) {
-      cb.onGenericTwoEntity({
-        tsType,
-        javaType,
-        generic: rg,
-      })
-    } else if (rg instanceof Enum) {
-      cb.onGenericTwoEnum({
-        tsType,
-        javaType,
-        generic: rg,
-      })
-    } else {
-      cb.onGenericTwoBasic({
-        tsType,
-        javaType,
-        generic: rg,
-      })
+    // 一个泛型
+    else if (t.generic.length === 1) {
+      const g = t.generic[0]
+      const sub = parseGenericType(g, deps).tsType
+      tsType += t.tsType + `<${sub}>`
     }
+
+    // 两个泛型
+    else if (t.generic.length === 2) {
+      const lg = t.generic[0]
+      const rg = t.generic[1]
+      const ls = parseGenericType(lg, deps).tsType
+      const rs = parseGenericType(rg, deps).tsType
+      tsType += t.tsType + `<${ls}, ${rs}>`
+    }
+  }
+
+  return {
+    tsType,
   }
 }
