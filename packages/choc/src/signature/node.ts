@@ -1,41 +1,40 @@
-export abstract class Node {
-  isPrimitive() {
+export abstract class TypeNode {
+  get isPrimitive(): boolean {
     return this instanceof Primitive
   }
 
-  isArray() {
+  get isArray(): boolean {
     return this instanceof ArrayTypeSignature
   }
 
-  isClassType() {
+  get isClassType(): boolean {
     return this instanceof ClassTypeSignature
   }
 
-  isClass() {
+  get isClass(): boolean {
     return this instanceof ClassSignature
   }
 
-  isTypeVar() {
+  get isTypeVar(): boolean {
     return this instanceof TypeVar
   }
 
-  as<T extends Node>() {
+  isStatic = false
+
+  as<T extends TypeNode>() {
     return (this as any) as T
   }
 
   abstract collectRefClasses(): Set<string>
-  abstract collectDirectRefClasses(): Set<string>
 }
 
-export class Primitive extends Node {
-  binaryName = ''
+export class Primitive extends TypeNode {
+  constructor(public readonly binaryName = '') {
+    super()
+  }
 
   collectRefClasses(): Set<string> {
     return new Set([this.binaryName])
-  }
-
-  collectDirectRefClasses(): Set<string> {
-    return new Set<string>()
   }
 
   toJSON() {
@@ -45,10 +44,7 @@ export class Primitive extends Node {
   }
 }
 
-export class ClassSignature extends Node {
-  jar = ''
-  jrt = ''
-
+export class ClassSignature extends TypeNode {
   binaryName = ''
   isInterface = false
   isAbstract = false
@@ -58,9 +54,20 @@ export class ClassSignature extends Node {
   appliedTypeArgs: TypeArg[] = []
   superClasses: ClassTypeSignature[] = []
 
-  fields: TypeSignature[] = []
-  methods: MethodTypeSignature[] = []
+  fields = new Map<string, TypeNode>()
+  methods = new Map<string, MethodTypeSignature>()
   privateFields: string[] = []
+
+  get classTypeSignature() {
+    const node = new ClassTypeSignature()
+    node.binaryName = this.binaryName
+    return node
+  }
+
+  get superClass() {
+    if (this.superClasses.length) return this.superClasses[0]
+    return undefined
+  }
 
   collectRefClasses(): Set<string> {
     const refs = new Set<string>()
@@ -70,23 +77,11 @@ export class ClassSignature extends Node {
     this.methods.forEach((f) => addAll(refs, f.collectRefClasses()))
     return refs
   }
-
-  collectDirectRefClasses(): Set<string> {
-    const refs = new Set<string>()
-    this.typeParams.forEach((tp) => addAll(refs, tp.collectRefClasses()))
-    // FIXME:
-    // this.collectFinalFields().forEach((f) =>
-    //   addAll(refs, f.collectRefClasses())
-    // )
-    this.fields.forEach((f) => addAll(refs, f.collectRefClasses()))
-    this.methods.forEach((f) => addAll(refs, f.collectDirectRefClasses()))
-    return refs
-  }
 }
 
-export class TypeParam extends Node {
+export class TypeParam extends TypeNode {
   name = ''
-  types: TypeSignature[] = []
+  types: TypeNode[] = []
 
   collectRefClasses(): Set<string> {
     const refs = new Set<string>()
@@ -95,63 +90,85 @@ export class TypeParam extends Node {
     }
     return refs
   }
+}
 
-  collectDirectRefClasses(): Set<string> {
+export class ArrayTypeSignature extends TypeNode {
+  constructor(public elementType: TypeNode) {
+    super()
+  }
+
+  collectRefClasses(): Set<string> {
+    return this.elementType.collectRefClasses()
+  }
+}
+export class ClassTypeSignature extends TypeNode {
+  binaryName = ''
+  typeArgs: TypeArg[] = []
+  nestedTypes: NestedClassTypeSignature[] = []
+
+  collectRefClasses(): Set<string> {
     const refs = new Set<string>()
-    for (const ts of this.types) {
-      addAll(refs, ts.collectDirectRefClasses())
-    }
+    refs.add(this.binaryName)
+    this.typeArgs.forEach((ta) => addAll(refs, ta.collectRefClasses()))
+    this.nestedTypes.forEach((nt) => addAll(refs, nt.collectRefClasses()))
     return refs
   }
 }
 
-export class ArrayTypeSignature extends Node {
+export class NestedClassTypeSignature extends TypeNode {
+  name = ''
+  typeArgs: TypeArg[] = []
+
   collectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
-  }
-  collectDirectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
-  }
-}
-export class ClassTypeSignature extends Node {
-  collectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
-  }
-  collectDirectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
-  }
-}
-export class MethodTypeSignature extends Node {
-  collectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
-  }
-  collectDirectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
+    const refs = new Set<string>()
+    this.typeArgs.forEach((ta) => addAll(refs, ta.collectRefClasses()))
+    return refs
   }
 }
 
-export class TypeSignature extends Node {
-  collectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
+export class MethodTypeSignature extends TypeNode {
+  isOverride = false
+  typeParams: TypeParam[] = []
+  formalParams: string[] = []
+
+  constructor(
+    public params: TypeNode[],
+    public ret: TypeNode,
+    public exceptions: TypeNode[]
+  ) {
+    super()
   }
-  collectDirectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
+
+  collectRefClasses(): Set<string> {
+    const refs = new Set<string>()
+    this.typeParams.forEach((tp) => addAll(refs, tp.collectRefClasses()))
+    this.params.forEach((p) => addAll(refs, p.collectRefClasses()))
+    addAll(refs, this.ret.collectRefClasses())
+    // exceptions is ignored
+    return refs
   }
 }
-export class TypeArg extends Node {
-  collectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
+
+export class TypeArg extends TypeNode {
+  static wildcard = new TypeArg(true)
+
+  prefix = ''
+  type?: TypeNode
+
+  constructor(public isWildcard = false) {
+    super()
   }
-  collectDirectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
+
+  collectRefClasses(): Set<string> {
+    if (!this.type) return new Set()
+    return this.type.collectRefClasses()
   }
 }
-export class TypeVar extends Node {
+export class TypeVar extends TypeNode {
+  name = ''
+
   collectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
-  }
-  collectDirectRefClasses(): Set<string> {
-    throw new Error('Method not implemented.')
+    return new Set()
   }
 }
 

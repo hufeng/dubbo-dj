@@ -1,13 +1,13 @@
 package com.mycompany.app;
 
-/**
- * Hello world!
- *
- */
-public class HelloProvider 
+public class HelloProvider extends ProviderBase
 {
     public String sayHi( String[] args )
     {
         return "Hello World!";
+    }
+
+    private PersonDto _util() {
+        return new PersonDto();
     }
 }

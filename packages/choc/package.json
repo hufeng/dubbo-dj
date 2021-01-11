@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "ts-mocha test/**/*.test.ts",
+    "test-single": "ts-mocha $1",
     "genRuntimeList": "coffee scripts/rt-list.coffee"
   },
   "keywords": [],

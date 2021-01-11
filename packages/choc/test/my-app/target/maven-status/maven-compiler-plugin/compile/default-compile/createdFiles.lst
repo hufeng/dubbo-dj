@@ -1,2 +1,4 @@
+com/mycompany/app/PersonDto.class
 com/mycompany/app/App.class
 com/mycompany/app/HelloProvider.class
+com/mycompany/app/ProviderBase.class

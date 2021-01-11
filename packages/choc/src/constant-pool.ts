@@ -26,9 +26,9 @@ export class ConstantPool {
     }
   }
 
-  getEntry<T extends ConstantInfo>(index: number): T {
+  getEntry<T extends ConstantInfo>(index: number): T | undefined {
     if (this._table.has(index)) return this._table.get(index)! as T
-    return new UnusableConstantInfo() as T
+    return undefined
   }
 
   _readInfo(tag: number) {
@@ -219,7 +219,7 @@ export class ClassInfo extends ConstantInfo {
   }
 
   get name() {
-    return this.pool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.pool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 }
 
@@ -407,11 +407,11 @@ export class NameAndTypeInfo extends ConstantInfo {
   }
 
   get name() {
-    return this.pool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.pool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 
   get descriptor() {
-    return this.pool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.pool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 }
 
@@ -520,7 +520,7 @@ export class MethodTypeInfo extends ConstantInfo {
   }
 
   get descriptor() {
-    return this.pool.getEntry<Utf8Info>(this.descriptorIndex).string
+    return this.pool.getEntry<Utf8Info>(this.descriptorIndex)?.string
   }
 }
 
@@ -552,7 +552,7 @@ export class ModuleInfo extends ConstantInfo {
   }
 
   get name() {
-    return this.pool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.pool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 }
 
@@ -565,6 +565,6 @@ export class PackageInfo extends ConstantInfo {
   }
 
   get name() {
-    return this.pool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.pool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 }

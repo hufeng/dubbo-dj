@@ -90,6 +90,7 @@ export class Deflator {
       `**/*${this.opts.suffix ? this.opts.suffix + '.class' : ''}`
     )
     const files = await search(pattern)
+    const extLen = '.class'.length
     this.providers = files
       .filter((f) => {
         let isWhite = true
@@ -102,15 +103,12 @@ export class Deflator {
         }
         return isWhite && !isBlack
       })
-      .map((f) => path.relative(this.extractedDir, f))
+      .map((f) => path.relative(this.extractedDir, f).slice(0, -extLen))
   }
 
   async _doResolve() {
     this.providers.forEach((p) => {
-      this.providerResolvers.set(
-        p,
-        new ClassResolver(path.join(this.extractedDir, p), p)
-      )
+      this.providerResolvers.set(p, new ClassResolver(this.extractedDir, p))
     })
     await Promise.all(
       [...this.providerResolvers.values()].map((r) => r.resolve())

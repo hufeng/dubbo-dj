@@ -88,7 +88,7 @@ export class AttributeInfo {
   }
 
   get name() {
-    return this.constantPool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.constantPool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 
   getType() {
@@ -190,7 +190,7 @@ export class SourceFileAttr extends AttributeInfo {
   }
 
   get sourceFile() {
-    return this.constantPool.getEntry<Utf8Info>(this.sourceFileIndex).string
+    return this.constantPool.getEntry<Utf8Info>(this.sourceFileIndex)?.string
   }
 }
 
@@ -245,7 +245,7 @@ export class MethodParameters extends AttributeInfo {
 
   get formalParams() {
     return this.parameterTable.map(
-      (p) => this.constantPool.getEntry<Utf8Info>(p.nameIndex).string
+      (p) => this.constantPool.getEntry<Utf8Info>(p.nameIndex)?.string
     )
   }
 }
@@ -259,7 +259,7 @@ export class SignatureAttr extends AttributeInfo {
   }
 
   get signature() {
-    return this.constantPool.getEntry<Utf8Info>(this.signatureIndex).string
+    return this.constantPool.getEntry<Utf8Info>(this.signatureIndex)?.string
   }
 }
 
@@ -275,11 +275,11 @@ export class FieldInfo {
   }
 
   get name() {
-    return this.constantPool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.constantPool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 
   get descriptor() {
-    return this.constantPool.getEntry<Utf8Info>(this.descriptorIndex).string
+    return this.constantPool.getEntry<Utf8Info>(this.descriptorIndex)?.string
   }
 
   get signature() {
@@ -301,11 +301,11 @@ export class MethodInfo {
   }
 
   get name() {
-    return this.constantPool.getEntry<Utf8Info>(this.nameIndex).string
+    return this.constantPool.getEntry<Utf8Info>(this.nameIndex)?.string
   }
 
   get descriptor() {
-    return this.constantPool.getEntry<Utf8Info>(this.descriptorIndex).string
+    return this.constantPool.getEntry<Utf8Info>(this.descriptorIndex)?.string
   }
 
   get signature() {
@@ -340,16 +340,23 @@ export class ClassFile {
   attributes: AttributeInfo[] = []
 
   get name() {
-    return this.constantPool.getEntry<ClassInfo>(this.thisClass).name
+    return this.constantPool.getEntry<ClassInfo>(this.thisClass)?.name
+  }
+
+  // has value if there are generic types in class definition
+  get signature() {
+    const attrs = this.attributes.filter((attr) => attr.isSignature)
+    if (attrs.length === 1) return attrs[0].to(SignatureAttr).signature
+    return null
   }
 
   getSuperClass() {
-    return this.constantPool.getEntry<ClassInfo>(this.superClass).name
+    return this.constantPool.getEntry<ClassInfo>(this.superClass)?.name
   }
 
   getInterfaces() {
     return this.interfaces.map(
-      (itf) => this.constantPool.getEntry<ClassInfo>(itf).name
+      (itf) => this.constantPool.getEntry<ClassInfo>(itf)?.name
     )
   }
 }
