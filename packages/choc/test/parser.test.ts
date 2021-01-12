@@ -29,11 +29,13 @@ describe('parsing test suit', function () {
     const cm = ClassResolverManager.singleton()
     const cs = await cm.resolve('cases/ClassC')
 
-    console.log(cs)
-    console.log(cs.typeParams[0].types)
-    console.log(cs.superClass?.typeArgs)
-    // const cs1 = await cm.resolve('cases/BaseA');
-    // console.log(cs1.typeParams[0])
-    // console.log(ClassResolverManager.singleton().getFlattenFields(cs))
+    console.log(cs.typeParams)
+    console.log(
+      JSON.stringify(
+        [...(await cm.getFlattenFields('cases/ClassC')).entries()],
+        null,
+        2
+      )
+    )
   })
 })

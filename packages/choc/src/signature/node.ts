@@ -1,3 +1,5 @@
+import assert from 'assert'
+
 export abstract class TypeNode {
   get isPrimitive(): boolean {
     return this instanceof Primitive
@@ -25,6 +27,7 @@ export abstract class TypeNode {
     return (this as any) as T
   }
 
+  abstract clone(): TypeNode
   abstract collectRefClasses(): Set<string>
 }
 
@@ -42,6 +45,10 @@ export class Primitive extends TypeNode {
       name: this.binaryName.replace('/', '.'),
     }
   }
+
+  clone() {
+    return new Primitive(this.binaryName)
+  }
 }
 
 export class ClassSignature extends TypeNode {
@@ -51,7 +58,6 @@ export class ClassSignature extends TypeNode {
   isEnum = false
 
   typeParams: TypeParam[] = []
-  appliedTypeArgs: TypeArg[] = []
   superClasses: ClassTypeSignature[] = []
 
   fields = new Map<string, TypeNode>()
@@ -77,6 +83,10 @@ export class ClassSignature extends TypeNode {
     this.methods.forEach((f) => addAll(refs, f.collectRefClasses()))
     return refs
   }
+
+  clone(): never {
+    throw new Error('method not implemented')
+  }
 }
 
 export class TypeParam extends TypeNode {
@@ -90,6 +100,16 @@ export class TypeParam extends TypeNode {
     }
     return refs
   }
+
+  toTypeArg() {
+    const ta = new TypeArg()
+    ta.type = new TypeVar(this.name)
+    return ta
+  }
+
+  clone(): never {
+    throw new Error('method not implemented')
+  }
 }
 
 export class ArrayTypeSignature extends TypeNode {
@@ -99,6 +119,10 @@ export class ArrayTypeSignature extends TypeNode {
 
   collectRefClasses(): Set<string> {
     return this.elementType.collectRefClasses()
+  }
+
+  clone() {
+    return new ArrayTypeSignature(this.elementType.clone())
   }
 }
 export class ClassTypeSignature extends TypeNode {
@@ -113,6 +137,29 @@ export class ClassTypeSignature extends TypeNode {
     this.nestedTypes.forEach((nt) => addAll(refs, nt.collectRefClasses()))
     return refs
   }
+
+  applyTypeArgs(args: Map<string, TypeArg>) {
+    this.typeArgs.forEach((ta, i) => {
+      if (!ta.type) return
+      if (ta.type.isTypeVar) {
+        this.typeArgs[i] = args.get((ta.type as TypeVar).name)!
+      } else {
+        assert(ta.type.isClassType)
+        ;(ta.type as ClassTypeSignature).applyTypeArgs(args)
+      }
+    })
+  }
+
+  clone() {
+    const t = new ClassTypeSignature()
+    t.isStatic = this.isStatic
+    t.binaryName = this.binaryName
+    t.typeArgs = this.typeArgs.map((t) => t.clone() as TypeArg)
+    t.nestedTypes = this.nestedTypes.map(
+      (n) => n.clone() as NestedClassTypeSignature
+    )
+    return t
+  }
 }
 
 export class NestedClassTypeSignature extends TypeNode {
@@ -123,6 +170,14 @@ export class NestedClassTypeSignature extends TypeNode {
     const refs = new Set<string>()
     this.typeArgs.forEach((ta) => addAll(refs, ta.collectRefClasses()))
     return refs
+  }
+
+  clone() {
+    const t = new NestedClassTypeSignature()
+    t.isStatic = this.isStatic
+    t.name = this.name
+    t.typeArgs = this.typeArgs.map((t) => t.clone() as TypeArg)
+    return t
   }
 }
 
@@ -147,6 +202,10 @@ export class MethodTypeSignature extends TypeNode {
     // exceptions is ignored
     return refs
   }
+
+  clone(): never {
+    throw new Error('method not implemented')
+  }
 }
 
 export class TypeArg extends TypeNode {
@@ -163,12 +222,26 @@ export class TypeArg extends TypeNode {
     if (!this.type) return new Set()
     return this.type.collectRefClasses()
   }
+
+  clone() {
+    const t = new TypeArg()
+    t.isWildcard = this.isWildcard
+    t.prefix = this.prefix
+    t.type = this.type?.clone()
+    return t
+  }
 }
 export class TypeVar extends TypeNode {
-  name = ''
+  constructor(public name = '') {
+    super()
+  }
 
   collectRefClasses(): Set<string> {
     return new Set()
+  }
+
+  clone() {
+    return new TypeVar(this.name)
   }
 }
 
