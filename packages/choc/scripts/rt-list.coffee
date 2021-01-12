@@ -12,12 +12,11 @@ mkdirp = require "mkdirp"
 this script is used to grab all the builtin packages which are shipped by 
 JDK installations(Oracle JDK).
 
-it can run on MacOS out-of-box by its automatical JDK detecting the contents
-of the directory `/Library/Java/JavaVirtualMachines/` which is used by 
-the official JDK installer, however this automatical detecting process is 
-not promised to be always worked since current system could use various 
-JDK version manager and they would different directories to hold the JDK
-installation
+it aims to run on MacOS out-of-box by its automatically JDK detecting under the
+the directory `/Library/Java/JavaVirtualMachines/` which is used by the official 
+JDK installer, however this automatical detecting process is not promised to be 
+always worked since current system could use various JDK version manager and they 
+could use different directories to hold their JDK installations
 
 for the automatical JDK detecting can not work or running this script on other
 platform, try specify JDK path via ENV variables(eg. `export JAVA_HOME_V7=jdk_path`): 
