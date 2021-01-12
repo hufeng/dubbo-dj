@@ -1,2 +1,3 @@
 .prettierrc.js linguist-vendored
 jest.config.js linguist-vendored
+Makefile linguist-vendored
