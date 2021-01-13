@@ -59,16 +59,16 @@ export class ClassResolverManager {
 
   // assume there is `ClassA<TA>`
   //
-  // for `ClassB` is defined as `ClassB<TB, TA extends Data> extends ClassTA<TA>` then
-  // every its fields of ClassB come rom `ClassTA` with generic type `TA` now have type `Data`
+  // for there is a `ClassB` is defined as `ClassB<TB, TA extends Data> extends ClassTA<TA>`
+  // then every field of ClassB comes from `ClassTA` with generic type `TA` now has the type `Data`
   //
-  // for `ClassC<TC, TB extends String, TA extends Integer> extends ClassB<TB, TA>`
-  // fields come from `ClassB` with generic type `TB` now have type `String` and fields
-  // come from `ClassA` with generic type `TA` now have type `Integer`
+  // for there is a `ClassC` is defined as `ClassC<TC, TB extends String, TA extends Integer> extends ClassB<TB, TA>`
+  // fields come from `ClassB` with generic type `TB` now have type `String` and fields come from `ClassA` with 
+  // generic type `TA` now have type `Integer`
   //
   // so for flatting the fields of `ClassC` we follow below steps:
-  // 1. get ClassC's super classes chain: `[ClassB, ClassA]`
-  // 2. shift the chain, get the shifted item is `ClassB` in this step
+  // 1. get super classes chain of ClassC : `[ClassB, ClassA]`
+  // 2. shift the chain, got the shifted item which is `ClassB` in this step
   // 3. grab the type args of ClassB from ClassC's type params by using ClassB's TypeArgs,
   //   `[String, Integer]` in this step
   // 4. apply those type args from step3 to ClassB
@@ -76,17 +76,17 @@ export class ClassResolverManager {
   // 6. grab the type args of ClassA from those type args from step3 by using ClassA's
   //    TypeArgs
   // 7. apply those type args from step6 to ClassA
-  // 8. merge all the fields by reverse order of the chain from step1
+  // 8. merge all the fields by using the reverse order of the chain from step1
   //
   // for the details of how to grab the type args:
   // if we are at the step3 of above steps, the type params of ClassC should be an array of object:
-  // `[ {name: 'TC', type: xxx}, { name: 'TB', type: xxx }, { name: 'TC', type: xxx } ]`
-  // and ClassB has the TypeArgs: `[ { name: 'TB' }, { name: 'TA' } ]`
+  // `[ {name: 'TC', type: xxx}, { name: 'TB', type: xxx }, { name: 'TA', type: xxx } ]`
+  // and ClassB will apply type args: `[ { name: 'TB' }, { name: 'TA' } ]`
   //
   // note here `TB` and `TA` are type variables, not the generic type of ClassB's signature,
-  // consider this case if you feel it's confused:
-  // `ClassC<TC, TBX extends String, TAY extends Integer> extends ClassB<TBX, TAY>` and now ClassB
-  // has the TypeArgs: `[ { name: 'TBX' }, { name: 'TAY } ]`
+  // consider below case if you feel it's confused:
+  // `ClassC<TC, TBX extends String, TAY extends Integer> extends ClassB<TBX, TAY>` and now the type args
+  // passed to ClassB to apply are: `[ { name: 'TBX' }, { name: 'TAY } ]`
   async getFlattenFields(s: ClassSignature | string, typeArgs: TypeArg[] = []) {
     if (typeof s === 'string') s = await this.resolve(s)
 
