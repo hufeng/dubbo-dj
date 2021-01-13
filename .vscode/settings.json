@@ -3,6 +3,7 @@
         "Fieldref",
         "Methodref",
         "Varargs",
+        "clinit",
         "fffffffffffffffn",
         "javac",
         "mycompany",

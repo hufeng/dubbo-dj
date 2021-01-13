@@ -4,6 +4,7 @@ import { Deserializer } from './deserialize'
 import {
   ClassSignature,
   ClassTypeSignature,
+  MethodTypeSignature,
   SignatureParser,
   TypeArg,
   TypeNode,
@@ -200,7 +201,19 @@ export class ClassResolverManager {
     return { fields, args: appliedArgs }
   }
 
-  getFlattenMethods() {}
+  async getMethods(s: ClassSignature | string) {
+    if (typeof s === 'string') s = await this.resolve(s)
+
+    const noInternal = new Map<string, MethodTypeSignature>()
+    if (s.isEnum) return noInternal
+
+    for (const [name, m] of s.methods) {
+      if (name.startsWith('<init>') || name.startsWith('<clinit>')) continue
+      noInternal.set(name, m)
+    }
+
+    return noInternal
+  }
 }
 
 export class ClassResolver {
