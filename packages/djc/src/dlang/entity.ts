@@ -49,8 +49,8 @@ export class Entity extends Lang {
         this.fields.push({
           name,
           type: {
-            tsType: `${t.tsType}<${t.generic.tsType}>`,
-            javaType: `${t.javaType}(s.$lhs(this.${name}))`,
+            tsType: `${t.tsType}`,
+            javaType: `s.$hs(this.${name}, ${JSON.stringify(t.schema)})`,
           },
           comment: this.fieldComment(comment),
         })

@@ -68,7 +68,7 @@ export class Service extends Lang {
       onGenericOne: (t) => {
         method.args.push({
           name,
-          tsType: `${t.tsType}<${t.generic.tsType}>`,
+          tsType: `${t.tsType}`,
           javaType: ``,
         })
       },
@@ -115,8 +115,8 @@ export class Service extends Lang {
       },
       onGenericOne: (t) => {
         method.ret = {
-          tsType: `${t.tsType}<${t.generic.tsType}>`,
-          javaType: ``,
+          tsType: `${t.tsType}`,
+          javaType: `s.$hs(res, ${JSON.stringify(t.schema)})`,
         }
       },
       onGenericTwo: (t) => {

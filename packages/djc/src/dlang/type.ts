@@ -225,11 +225,7 @@ export interface ITypeCallBack {
   onBasic(param: IType): void
   onEntity(param: Entity): void
   onEnum(parma: Enum): void
-  onGenericOne(param: {
-    tsType: string
-    javaType: string
-    generic: { tsType: string }
-  }): void
+  onGenericOne(param: { tsType: string; schema: Object }): void
   onGenericTwo(param: {
     tsType: string
     javaType: string
@@ -264,8 +260,9 @@ export function parseTypeMeta(
 
   // root is one generic
   if (generic.length === 1) {
-    const g = generic[0]
-    cb.onGenericOne({ tsType, javaType, generic: parseGenericType(g, deps) })
+    // const g = generic[0]
+    // cb.onGenericOne({ tsType, javaType, generic: parseGenericType(g, deps) })
+    cb.onGenericOne({ ...parseGenericType(type, deps) })
     return
   }
 
@@ -280,11 +277,17 @@ export function parseTypeMeta(
   }
 }
 
+interface IGenericScheme {
+  type: string | { enum: { fullClsName: string; clsName: string } }
+  item: IGenericScheme | null | [IGenericScheme, IGenericScheme]
+}
+
 export function parseGenericType(
   type: Entity | Enum | (() => IType),
   deps: Deps
-): { tsType: string } {
+): { tsType: string; schema: IGenericScheme } {
   let tsType = ''
+  const schema = {} as IGenericScheme
 
   deps.add('@dubbo/sugar', 's')
 
@@ -292,12 +295,21 @@ export function parseGenericType(
   if (type instanceof Entity) {
     const infName = deps.add(type.fullClsName, type.infName, false)
     tsType += infName
+    schema.type = 'entity'
+    schema.item = null
   }
 
   // 当前是枚举类型
   else if (type instanceof Enum) {
     const clsName = deps.add(type.fullClsName, type.clsName)
     tsType += clsName
+    schema.type = {
+      enum: {
+        fullClsName: type.fullClsName,
+        clsName: type.clsName,
+      },
+    }
+    schema.item = null
   }
 
   // 基本类型或者泛型
@@ -306,26 +318,33 @@ export function parseGenericType(
     // 当前是普通类型
     if (!t.generic || t.generic.length === 0) {
       tsType += t.tsType
+      schema.type = t.javaType
+      schema.item = null
     }
 
     // 一个泛型
     else if (t.generic.length === 1) {
       const g = t.generic[0]
-      const sub = parseGenericType(g, deps).tsType
-      tsType += t.tsType + `<${sub}>`
+      const { tsType: _tsType, schema: _schema } = parseGenericType(g, deps)
+      tsType += t.tsType + `<${_tsType}>`
+      schema.type = 'list'
+      schema.item = _schema
     }
 
     // 两个泛型
     else if (t.generic.length === 2) {
       const lg = t.generic[0]
       const rg = t.generic[1]
-      const ls = parseGenericType(lg, deps).tsType
-      const rs = parseGenericType(rg, deps).tsType
+      const { tsType: ls, schema: lschema } = parseGenericType(lg, deps)
+      const { tsType: rs, schema: rschema } = parseGenericType(rg, deps)
       tsType += t.tsType + `<${ls}, ${rs}>`
+      schema.type = 'map'
+      schema.item = [lschema, rschema]
     }
   }
 
   return {
     tsType,
+    schema,
   }
 }
