@@ -1,0 +1,25 @@
+{{=it.mott}}
+{{="\n\n"}}
+
+{{=""}}
+{{="\n"}}
+
+{{=`import ${it.shortName} from './base/${it.shortName}';`}}
+{{="\n\n"}}
+
+{{=it.comment}}
+{{="\n\n"}}
+
+export default class {{=it.shortName}}Impl extends {{=it.shortName}}{
+  {{="\n\n"}}
+  {{~it.funcs:f}}
+    async {{=f.name}}(
+      {{~f.args:arg}}
+        {{=f.name}}:{{=arg.type.tsType}},
+      {{~}}
+    ): Promise<{{=f.ret.tsType}}> {
+      throw new Errro('Not implemented {{=f.name}} method')
+    }
+    {{="\n\n"}}
+  {{~}}
+}

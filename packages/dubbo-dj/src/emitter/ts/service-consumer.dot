@@ -1,0 +1,42 @@
+{{=it.mott}}
+
+{{="\n\n"}}
+  import {Dubbo, TDubboCallResult} from 'apache-dubbo-js';
+  {{=it.imports}}
+{{="\n\n"}}
+
+export interface {{=it.infName}} {
+  {{~it.methods:method}}
+    {{=method.name}}(
+      {{~method.args:arg}}
+        {{=arg.name}}:{{=arg.type.tsType}},
+      {{~}}
+    ): TDubboCallResult<{{=method.ret.tsType}}>,
+  {{~}}
+}
+
+{{=it.comment}}
+{{="\n\n"}}
+
+export function {{=it.shortName}}(dubbo: Dubbo): {{=it.infName}}{
+ return dubbo.proxyService<{{=it.infName}}>({
+    dubboInterface: '{{=it.fullName}}',
+    methods: {
+      {{~it.funcs:method}}
+        {{=method.name}}(
+          {{~method.args:arg}}
+            {{=arg.name}}:{{=arg.type.tsType}},
+          {{~}}
+        ):any{
+          return [
+            {{~method.args:arg}}
+              {{=arg.name}},
+            {{~}}
+          ]
+        },
+      {{~}}
+      {{="\n"}}
+    } 
+  });
+}
+

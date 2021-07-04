@@ -1,0 +1,43 @@
+{{=it.mott}}
+
+{{="\n\n"}}
+{{=it.imports}}
+{{="\n\n"}}
+
+{{=it.comment}}
+
+{{="\n\n"}}
+
+export default abstract class {{=it.shortName}} {
+  dubboInterface = '{{=it.fullName}}';
+  {{="\n\n"}}
+
+  methods = {
+    {{~it.funcs:method}}
+    {{=method.name}}: async (
+      {{~method.args:arg}}
+        {{=arg.name}}:{{=arg.type.tsType}},
+      {{~}}
+    ) => {
+      {{?method.ret.tsType === 'void'}}
+        this.{{=method.name}}({{=method.args.map(arg => arg.name).join(',')}})
+      {{?}}
+
+      {{?method.ret.tsType !== 'void'}}
+        const val = await this.{{=method.name}}({{=method.args.map(arg => arg.name).join(',')}});
+        return {{=method.ret.javaType}}(val)
+      {{?}} 
+    },
+    {{~}}
+  }
+  {{="\n\n"}}
+
+  {{~it.funcs:method}}
+    abstract async {{=method.name}}(
+      {{~method.args:arg}}
+      {{=arg.name}}:{{=arg.type.tsType}},
+    {{~}}
+    ):Promise<{{=method.ret.tsType}}>
+    {{="\n\n"}}
+  {{~}}
+}

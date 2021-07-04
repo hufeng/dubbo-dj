@@ -1,0 +1,41 @@
+{{=it.mott}}
+{{="\n\n"}}
+{{=it.imports}}
+{{="\n\n"}}
+
+export interface {{=it.infName}} {
+  {{~it.fields:field}}
+    {{=field.comment}}
+    {{=field.name}}:{{=field.type.tsType}};
+    {{="\n"}}
+  {{~}}
+}
+
+{{="\n\n"}}
+{{=it.comment}}
+{{="\n\n"}}
+
+export default class {{=it.shortName}} {
+  {{~it.fields:field}}
+    {{=field.comment}}
+    {{=field.name}}:{{=field.type.tsType}};
+    {{="\n"}}
+  {{~}}
+  {{="\n"}}
+
+  constructor(props: {{=it.infName}}) {
+    {{~it.fields:field}}
+      this.{{=field.name}} = props.{{=field.name}};
+    {{~}}
+  }
+
+  {{="\n\n"}}
+
+  __fields2java() {
+    return java('{{=it.fullName}}', {
+      {{~it.fields:field}}
+        {{=field.name}}:{{=field.type.javaType }}(this.{{=field.name}}),
+      {{~}}
+    })
+  }
+}

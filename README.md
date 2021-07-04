@@ -2,6 +2,10 @@
 
 A dsl tool that generates dubbo code
 
+# Arch
+
+
+
 # getting started
 
 ## installation
@@ -27,28 +31,28 @@ Options:
 
 ## DSL API
 
-### entity object
+### e object
 
 ---
 
-#### **entity**
+#### **e**
 
 | args    | type   | description          | required |
 | :------ | :----- | :------------------- | :------: |
-| name    | string | entity class name    |   true   |
-| comment | string | entity class comment |  false   |
+| name    | string | e class name    |   true   |
+| comment | string | e class comment |  false   |
 
 #### **field**
 
 | args    | type                                                 | description          | required |
 | :------ | :--------------------------------------------------- | :------------------- | :------: |
-| name    | string                                               | entity field name    |   true   |
-| type    | entity, enum, dl.{Integer, String, Boolean, Char...} | entity field type    |   true   |
-| comment | string                                               | entity field comment |  false   |
+| name    | string                                               | e field name    |   true   |
+| type    | e, enum, dl.{Integer, String, Boolean, Char...} | e field type    |   true   |
+| comment | string                                               | e field comment |  false   |
 
 #### **ok**
 
-it means that we finish the entity declaration.
+it means that we finish the e declaration.
 
 ---
 
@@ -59,7 +63,7 @@ it means that we finish the entity declaration.
 import { dl } from '@dubbo/dj'
 
 const user = dl
-  .entity('org.apache.dubbo.entity.User')
+  .e('org.apache.dubbo.e.User')
   .field('id', dl.Integer)
   .field('name', dl.String)
   .field('email', dl.String)
@@ -94,7 +98,7 @@ export default class User {
   }
 
   __fields2java() {
-    java('org.apache.dubbo.entity.User', {
+    java('org.apache.dubbo.e.User', {
       id: java.Integer(this.id),
       name: java.String(this.name),
       age: java.String(this.age),
@@ -124,7 +128,7 @@ export default class User {
 
 #### **ok**
 
-it means that we finish the entity declaration.
+it means that we finish the e declaration.
 
 ---
 
@@ -132,14 +136,14 @@ it means that we finish the entity declaration.
 
 ```typescript
 const color = dl
-  .enumer('org.apache.dubbo.entity.Color')
+  .enumer('org.apache.dubbo.e.Color')
   .field('Red', 0, '红色')
   .field('Green', 1, '绿色')
   .field('Blue', 2, '蓝色')
   .ok()
 
 const fileType = dl
-  .enumer('org.apache.dubbo.entity.FileType')
+  .enumer('org.apache.dubbo.e.FileType')
   .field('PDF', 'PDF', 'PDF')
   .field('MP3', 'MP3', 'mp3')
   .ok()
@@ -188,11 +192,11 @@ export enum FileType {
 }
 ```
 
-#### service
+#### s
 
 ---
 
-#### **service**
+#### **s**
 
 | args    | type   | description        | required |
 | :------ | :----- | :----------------- | :------: |
@@ -222,7 +226,7 @@ export enum FileType {
 | args | type                        | description     | required |
 | :--- | :-------------------------- | :-------------- | :------: |
 | name | string                      | method arg name |   true   |
-| type | enum/entity, dl.{String...} | method arg type |   true   |
+| type | enum/e, dl.{String...} | method arg type |   true   |
 
 #### **ret**
 
@@ -232,7 +236,7 @@ export enum FileType {
 
 #### **ok**
 
-it means that we finish the service declaration.
+it means that we finish the s declaration.
 
 ---
 
@@ -240,10 +244,10 @@ it means that we finish the service declaration.
 
 ```typescript
 import { dl } from '@dubbo/dj'
-import { user } from './entity'
+import { user } from './e'
 
 export const userService = dl
-  .service('org.apache.dubbo.service.UserService')
+  .s('org.apache.dubbo.s.UserService')
   .group('')
   .version('1.0.0')
   .method('sayHello')
@@ -257,7 +261,7 @@ export const userService = dl
 
 **from `djc` compile, it will be emit source code like this,**
 
-=> UserService (Abstract Service)
+=> UserService (Abstract LangService)
 
 ```typescript
 /**
@@ -265,11 +269,11 @@ export const userService = dl
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import User, { IUser } from '../../entity/User'
+import User, { IUser } from '../../e/User'
 import java from 'js-to-java'
 
 export default abstract class UserService {
-  dubboInterface = 'org.apache.dubbo.service.UserService'
+  dubboInterface = 'org.apache.dubbo.s.UserService'
   group = ''
   version = '1.0.0'
   methods = {
@@ -289,7 +293,7 @@ export default abstract class UserService {
 }
 ```
 
-=> UserServiceImpl (Dubbo provider service)
+=> UserServiceImpl (Dubbo provider s)
 
 ```typescript
 /**
@@ -297,7 +301,7 @@ export default abstract class UserService {
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import { IUser } from '../entity/User'
+import { IUser } from '../e/User'
 import UserService from './base/UserService'
 
 export default class UserServiceImpl extends UserService {
@@ -321,7 +325,7 @@ export default class UserServiceImpl extends UserService {
 
 import { Dubbo, TDubboCallResult } from 'apache-dubbo-js'
 import { argumentMap } from 'interpret-util'
-import { IUser } from '../../entity/User'
+import { IUser } from '../../e/User'
 
 export interface IUserService {
   sayHello(user: IUser): TDubboCallResult<IUser>
@@ -336,7 +340,7 @@ export const UserServiceWrapper = {
 
 export function UserService(dubbo: Dubbo): IUserService {
   return dubbo.proxyService<IUserService>({
-    dubboInterface: 'org.apache.dubbo.service.UserService',
+    dubboInterface: 'org.apache.dubbo.s.UserService',
     methods: UserServiceWrapper,
   })
 }
@@ -352,9 +356,9 @@ the gen code structure, We will support java and go soon.
     └── org
         └── apache
             └── dubbo
-                ├── entity
+                ├── e
                 │   └── User.ts
-                └── service
+                └── s
                     ├── UserService.ts
                     ├── base
                     │   └── UserService.ts
@@ -368,14 +372,14 @@ the gen code structure, We will support java and go soon.
 
 ```typescript
 import { djc } from '@dubbo/dj'
-import * as entity from './entity'
-import * as service from './service'
+import * as e from './e'
+import * as s from './s'
 
 djc({
-  buildEntry: { entity, service },
+  buildEntry: { e, s },
   config: {
     lang: ['ts'], // optional（support multiple value）， ts, go, java
-    type: ['service'], // optional （support multiple value）， entity, consumer, service, serviceImpl
+    type: ['s'], // optional （support multiple value）， e, consumer, s, serviceImpl
   },
 })
 ```
