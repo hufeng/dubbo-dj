@@ -1,1 +1,3 @@
-describe('type test site', () => {})
+describe('type test site', () => {
+  it('test', () => {})
+})
