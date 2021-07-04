@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@dubbo/dj",
+  "name": "@dubbo/dj-monorepo",
   "version": "1.0.0",
   "repository": "git@github.com:hufeng/dj.git",
   "author": "hufeng <fengmi99@gmail.com>",
