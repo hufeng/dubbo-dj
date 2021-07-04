@@ -4,14 +4,6 @@
 
 A dsl tool that generates dubbo code
 
-# Arch
-<div style="float:left">
-  <img src="https://user-images.githubusercontent.com/533008/124393932-8d5fcf80-dd2f-11eb-8bb9-65879ca0a436.png" width="500px" style="float:left"></image>
-  <img src="https://user-images.githubusercontent.com/533008/124393968-c009c800-dd2f-11eb-9138-95e49999568a.png" width="500px"  style="float:left"></image>
-</div>
-<img src="https://user-images.githubusercontent.com/533008/124393985-d0ba3e00-dd2f-11eb-94b5-8d808d7d77cb.png" width="800px" height="1000px"></img>
-
-
 
 # getting started
 
