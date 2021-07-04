@@ -4,6 +4,8 @@
 
 A dsl tool that generates dubbo code
 
+[![Node.js CI](https://github.com/hufeng/dubbo-dj/actions/workflows/nodejs.yml/badge.svg)](https://github.com/hufeng/dubbo-dj/actions/workflows/nodejs.yml)
+
 
 # getting started
 
