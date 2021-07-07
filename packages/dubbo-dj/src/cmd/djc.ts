@@ -1,20 +1,29 @@
-#!/usr/bin/env node
+// #!/usr/bin/env node
 
 import { Command } from 'commander'
 import { version } from './djc-version'
 import { init } from './djc-init'
 
-new Command()
-  .version(version())
+const program = new Command()
+//
+program
+  .version('1.0.0')
+  .description('A dsl tool that generate dubbo ecosystem code ❤️')
+  .version(version(), '-v, --version', 'output the current version')
+
+program
   .command('init [path]')
-  .description('init dubbo-dj project in path')
+  .description('init dubbo dj scaffold project')
   .action(async (path = '.') => {
     await init(path)
   })
+
+program
   .command('build')
-  .description('build dubbo dj gen source code')
+  .description('cd dubbo dj scaffold directory and compile code gen')
   .action(() => {
     // 检查当前路径有无package.json
     // 执行npm build
   })
-  .parse(process.argv)
+
+program.parse(process.argv)
