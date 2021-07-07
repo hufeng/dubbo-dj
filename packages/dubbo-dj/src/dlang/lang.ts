@@ -16,7 +16,7 @@ export default class Lang {
     this.shortName = splitFilenames.pop() || ''
     this.infName = `I${this.shortName}`
 
-    this.modulePath = path.join(...this.fullName.split('.'))
+    this.modulePath = this.fullName.split('.').join('/')
 
     // init dep
     this.deps = new Dep()
