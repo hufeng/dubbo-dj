@@ -1,14 +1,27 @@
-import { DubboDep } from './dlang/lang-deps'
+import { Dep } from './dlang/lang-deps'
 import { DubboEntity } from './dlang/lang-entity'
 import { DubboEnum } from './dlang/lang-enum'
-import { Func } from './dlang/lang-service'
+import { DubboService, Func } from './dlang/lang-service'
+
+export type TFromModule = string
+export interface IDepValue {
+  is3rdModule: boolean
+  defaultModule: string
+  noneDefaultModules: Set<string>
+}
+export interface IDepAdd {
+  fromModule: string
+  importModule: string
+  is3rdModule: boolean
+  isDefaultModule?: boolean
+}
 
 export type TDataType =
   | DubboEntity
   | DubboEnum
   | (() => IType)
-  | ((dep: DubboDep) => IType)
-export type TFuncOption = (func: Func, deps: DubboDep) => void
+  | ((dep: Dep) => IType)
+export type TFuncOption = (func: Func, deps: Dep) => void
 
 export interface IArg {
   name: string
@@ -60,7 +73,7 @@ export interface IConfigure {
       [k in string]: DubboEntity
     }
     service: {
-      [k in string]: LangService
+      [k in string]: DubboService
     }
   }
   output?: {

@@ -2,13 +2,16 @@ import * as t from '../dlang/type'
 import { entity, enumeration } from '../dlang'
 import { DubboEntityEmitter } from '../emitter'
 
-const color = enumeration('org.apache.dubbo.enum.Color', '颜色类型的枚举')
+const color = enumeration(
+  'org.apache.dubbo.domain.enum.Color',
+  '颜色类型的枚举'
+)
   .field('RED', 0)
   .field('GREEN', 1)
   .field('BLUE', 2)
   .ok()
 
-const addr = entity('org.apache.dubbo.entity.Addr')
+const addr = entity('org.apache.dubbo.domain.Address')
   .field('id', t.Integer, '地址id')
   .field('province', t.String, '省')
   .field('city', t.String, '市')

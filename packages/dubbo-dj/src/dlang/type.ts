@@ -1,5 +1,5 @@
 import { IType, TDataType } from '../types'
-import { DubboDep } from './lang-deps'
+import { Dep } from './lang-deps'
 import { DubboEntity } from './lang-entity'
 import { DubboEnum } from './lang-enum'
 
@@ -10,9 +10,10 @@ export interface IProject {
 }
 
 // ~~~~~~~~~ factory ~~~~~~~~~~~~~~~~~~~~~~~~~~
-export function universalType(dep: DubboDep, type: TDataType) {
+export function universalType(dep: Dep, type: TDataType) {
   if (type instanceof DubboEntity) {
     dep.add({
+      is3rdModule: false,
       fromModule: type.fullName,
       importModule: type.shortName,
     })
@@ -22,6 +23,7 @@ export function universalType(dep: DubboDep, type: TDataType) {
     }
   } else if (type instanceof DubboEnum) {
     dep.add({
+      is3rdModule: false,
       fromModule: type.fullName,
       importModule: type.shortName,
     })
@@ -171,13 +173,12 @@ export function Character(): IType {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~ container ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-export function List(
-  type: TDataType
-): (() => IType) | ((dep: DubboDep) => IType) {
+export function List(type: TDataType): (() => IType) | ((dep: Dep) => IType) {
   if (type instanceof DubboEntity) {
     const { infName } = type
-    return (dep: DubboDep) => {
+    return (dep: Dep) => {
       dep.add({
+        is3rdModule: false,
         fromModule: type.fullName,
         importModule: type.infName,
       })
@@ -190,8 +191,9 @@ export function List(
 
   if (type instanceof DubboEnum) {
     const { shortName, fullName } = type
-    return (dep: DubboDep) => {
+    return (dep: Dep) => {
       dep.add({
+        is3rdModule: false,
         fromModule: type.fullName,
         importModule: type.shortName,
       })
@@ -202,7 +204,7 @@ export function List(
     }
   }
 
-  return (dep: DubboDep) => {
+  return (dep: Dep) => {
     const t = type(dep)
     return {
       tsType: `Array<${t.tsType}>`,

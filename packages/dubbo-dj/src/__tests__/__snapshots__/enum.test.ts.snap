@@ -3,7 +3,7 @@
 exports[`enumeration test suite test color number enum 1`] = `
 DubboEnum {
   "comment": "",
-  "deps": DubboDep {
+  "deps": Dep {
     "depMap": Map {},
   },
   "fields": Array [
@@ -34,6 +34,7 @@ DubboEnum {
   ],
   "fullName": "org.apache.dubbo.e.Color",
   "infName": "IColor",
+  "modulePath": "org/apache/dubbo/e/Color",
   "shortName": "Color",
 }
 `;
@@ -41,7 +42,7 @@ DubboEnum {
 exports[`enumeration test suite test string enum 1`] = `
 DubboEnum {
   "comment": "",
-  "deps": DubboDep {
+  "deps": Dep {
     "depMap": Map {},
   },
   "fields": Array [
@@ -64,6 +65,7 @@ DubboEnum {
   ],
   "fullName": "org.apache.dubbo.e.FileType",
   "infName": "IFileType",
+  "modulePath": "org/apache/dubbo/e/FileType",
   "shortName": "FileType",
 }
 `;

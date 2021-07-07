@@ -1,4 +1,3 @@
-import path from 'path'
 import debug from 'debug'
 import fsx from 'fs-extra'
 import { fmt } from '../common'
@@ -27,15 +26,6 @@ export default abstract class Emitter {
 
   dotPath(cls: string) {
     return cls.replace(/\./g, '/')
-  }
-
-  relPath(from: string, to: string) {
-    const fromArr = from.split('.')
-    fromArr.pop()
-    // 计算相对路径
-    const relPath = path.relative(fromArr.join('/'), this.dotPath(to))
-    log(`${from} => relative => ${to} =>`, relPath)
-    return relPath
   }
 
   // write to => ./dubbo/ts/**/*.ts

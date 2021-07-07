@@ -3,18 +3,18 @@
 exports[`test s lang suite test baisc s 1`] = `
 DubboService {
   "comment": "",
-  "deps": DubboDep {
+  "deps": Dep {
     "depMap": Map {
-      "org.apache.dubbo.entity.Addr" => Object {
+      "org/apache/dubbo/domain/Address" => Object {
         "defaultModule": "",
-        "is3rdLib": false,
+        "is3rdModule": false,
         "noneDefaultModules": Set {
-          "IAddr",
+          "IAddress",
         },
       },
     },
   },
-  "fullName": "org.apache.dubbo.s.HelloService",
+  "fullName": "org.apache.dubbo.service.HelloService",
   "funcs": Array [
     Func {
       "args": Array [
@@ -57,7 +57,7 @@ DubboService {
           "name": "addr",
           "type": Object {
             "javaType": "(function withList(val:Array<any>=[]) {return java.List(val.map(v => v.__fields2java()))})",
-            "tsType": "Array<IAddr>",
+            "tsType": "Array<IAddress>",
           },
         },
       ],
@@ -70,6 +70,7 @@ DubboService {
     },
   ],
   "infName": "IHelloService",
+  "modulePath": "org/apache/dubbo/service/HelloService",
   "shortName": "HelloService",
 }
 `;
@@ -89,7 +90,7 @@ export default class HelloServiceImpl extends HelloService {
 
   async sayWorld(
     sayWorld: Array<string>,
-    sayWorld: Array<IAddr>
+    sayWorld: Array<IAddress>
   ): Promise<Array<number>> {
     throw new Errro('Not implemented sayWorld method')
   }
@@ -103,17 +104,17 @@ exports[`test s lang suite test baisc s 3`] = `
  * ~~~ 💗 machine coding 💗 ~~~
  */
 
-import { IAddr } from 'org.apache.dubbo.entity.Addr'
+import { IAddress } from '../../domain/Address'
 
 export default abstract class HelloService {
-  dubboInterface = 'org.apache.dubbo.s.HelloService'
+  dubboInterface = 'org.apache.dubbo.service.HelloService'
 
   methods = {
     sayHello: async (name: string, email: string) => {
       const val = await this.sayHello(name, email)
       return java.String(val)
     },
-    sayWorld: async (name: Array<string>, addr: Array<IAddr>) => {
+    sayWorld: async (name: Array<string>, addr: Array<IAddress>) => {
       const val = await this.sayWorld(name, addr)
       return (function withList(val: Array<any> = []) {
         return java.List(val.map((v) => java.Integer(v)))
@@ -125,7 +126,7 @@ export default abstract class HelloService {
 
   abstract async sayWorld(
     name: Array<string>,
-    addr: Array<IAddr>
+    addr: Array<IAddress>
   ): Promise<Array<number>>
 }
 "
@@ -138,18 +139,18 @@ exports[`test s lang suite test baisc s 4`] = `
  */
 
 import { Dubbo, TDubboCallResult } from 'apache-dubbo-js'
-import { IAddr } from 'org.apache.dubbo.entity.Addr'
+import { IAddress } from '../../domain/Address'
 
 export interface IHelloService {}
 
 export function HelloService(dubbo: Dubbo): IHelloService {
   return dubbo.proxyService<IHelloService>({
-    dubboInterface: 'org.apache.dubbo.s.HelloService',
+    dubboInterface: 'org.apache.dubbo.service.HelloService',
     methods: {
       sayHello(name: string, email: string): any {
         return [name, email]
       },
-      sayWorld(name: Array<string>, addr: Array<IAddr>): any {
+      sayWorld(name: Array<string>, addr: Array<IAddress>): any {
         return [name, addr]
       },
     },

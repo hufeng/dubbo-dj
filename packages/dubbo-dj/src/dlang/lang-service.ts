@@ -1,7 +1,7 @@
 import Lang from './lang'
 import { universalType } from './type'
 import { IArg, IFuncArg, IType, TDataType, TFuncOption } from '../types'
-import { DubboDep } from './lang-deps'
+import { Dep } from './lang-deps'
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ model ~~~~~~~~~~~~~~~~~~~~~~~~~~
 export class DubboService extends Lang {
@@ -61,21 +61,25 @@ export class Func {
 
 // ~~~~~~~~~~~~~~~ functional option type ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export const f = {
-  name: (name: string, comment: string = '') => (func: Func) => {
-    func.name = name
-    func.comment = comment
-  },
-  ret: (type: TDataType) => (func: Func, deps: DubboDep) => {
+  name:
+    (name: string, comment: string = '') =>
+    (func: Func) => {
+      func.name = name
+      func.comment = comment
+    },
+  ret: (type: TDataType) => (func: Func, deps: Dep) => {
     func.ret = universalType(deps, type)
   },
-  args: (...args: Array<IArg>) => (func: Func, deps: DubboDep) => {
-    func.args = args.map((v) => {
-      return {
-        ...v,
-        type: universalType(deps, v.type),
-      }
-    })
-  },
+  args:
+    (...args: Array<IArg>) =>
+    (func: Func, deps: Dep) => {
+      func.args = args.map((v) => {
+        return {
+          ...v,
+          type: universalType(deps, v.type),
+        }
+      })
+    },
   arg: (name: string, type: TDataType, comment?: string) => {
     return {
       name,

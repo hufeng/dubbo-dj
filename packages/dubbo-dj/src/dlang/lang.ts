@@ -1,21 +1,25 @@
-import { DubboDep } from './lang-deps'
+import { Dep } from './lang-deps'
+import path from 'path'
 
 export default class Lang {
   fullName: string
   shortName: string
   // ts interface name
   infName: string
-
-  deps: DubboDep
+  deps: Dep
   comment: string
+  modulePath: string
 
   constructor(fullClsName: string, comment?: string) {
     this.fullName = fullClsName
-    this.shortName = fullClsName.split('.').pop() || ''
+    const splitFilenames = fullClsName.split('.') || ''
+    this.shortName = splitFilenames.pop() || ''
     this.infName = `I${this.shortName}`
 
+    this.modulePath = path.join(...this.fullName.split('.'))
+
     // init dep
-    this.deps = new DubboDep()
+    this.deps = new Dep()
     this.comment = this.wrapComment(comment)
   }
 
@@ -38,7 +42,7 @@ export default class Lang {
     `
   }
 
-  imports(deps: DubboDep): string {
+  imports(deps: Dep): string {
     const buff = []
     for (let [k, v] of deps.getDepMap().entries()) {
       buff.push('import ')
@@ -51,8 +55,16 @@ export default class Lang {
       if (v.noneDefaultModules.size > 0) {
         buff.push(`{${[...v.noneDefaultModules].join(',')}}`)
       }
-      buff.push(`from '${k}';`)
+      if (v.is3rdModule) {
+        buff.push(`from '${k}';`)
+      } else {
+        buff.push(`from '${this.relPath(this.modulePath, k)}'`)
+      }
     }
     return buff.join('')
+  }
+
+  relPath(basePath: string, importPath: string) {
+    return path.relative(basePath, importPath)
   }
 }

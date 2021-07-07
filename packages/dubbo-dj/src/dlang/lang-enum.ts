@@ -29,7 +29,7 @@ export class DubboEnum extends Lang {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DSL ~~~~~~~~~~~~~~~~~~~~~~~
-export class DubboEnumDSL {
+export class DubboEnumBuilder {
   private readonly enumeration: DubboEnum
 
   constructor(fullName: string, comment: string = '') {
@@ -57,5 +57,5 @@ export class DubboEnumDSL {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ factory ~~~~~~~~~~~~~~~~~~~~~~~~
 export function enumeration(cls: string, comment?: string) {
-  return new DubboEnumDSL(cls, comment)
+  return new DubboEnumBuilder(cls, comment)
 }

@@ -41,13 +41,13 @@ Object {
       "comment": "",
       "name": "color",
       "type": Object {
-        "javaType": "((v:any) => java.enum('org.apache.dubbo.enum.Color', Color[v]))",
+        "javaType": "((v:any) => java.enum('org.apache.dubbo.domain.enum.Color', Color[v]))",
         "tsType": "Color",
       },
     },
   ],
   "fullName": "org.apache.dubbo.domain.User",
-  "imports": "import  java from 'js-to-java';import {Color}from 'org.apache.dubbo.enum.Color';",
+  "imports": "import  java from 'js-to-java';import {Color}from '../enum/Color'",
   "infName": "IUser",
   "mott": "
       /**
@@ -66,7 +66,7 @@ exports[`e test suite test basic e 2`] = `
  */
 
 import java from 'js-to-java'
-import { Color } from 'org.apache.dubbo.enum.Color'
+import { Color } from '../enum/Color'
 
 export interface IUser {
   /**
@@ -109,9 +109,8 @@ export default class User {
       id: java.Integer(this.id),
       name: java.String(this.name),
       email: java.String(this.email),
-      color: ((v: any) => java.enum('org.apache.dubbo.enum.Color', Color[v]))(
-        this.color
-      ),
+      color: ((v: any) =>
+        java.enum('org.apache.dubbo.domain.enum.Color', Color[v]))(this.color),
     })
   }
 }
@@ -160,12 +159,12 @@ Object {
       "name": "addrs",
       "type": Object {
         "javaType": "(function withList(val:Array<any>=[]) {return java.List(val.map(v => v.__fields2java()))})",
-        "tsType": "Array<IAddr>",
+        "tsType": "Array<IAddress>",
       },
     },
   ],
   "fullName": "org.apache.dubbo.domain.User",
-  "imports": "import  java from 'js-to-java';import {IAddr}from 'org.apache.dubbo.entity.Addr';",
+  "imports": "import  java from 'js-to-java';import {IAddress}from '../Address'",
   "infName": "IUser",
   "mott": "
       /**
@@ -184,7 +183,7 @@ exports[`e test suite test first-level list 2`] = `
  */
 
 import java from 'js-to-java'
-import { IAddr } from 'org.apache.dubbo.entity.Addr'
+import { IAddress } from '../Address'
 
 export interface IUser {
   /**
@@ -198,7 +197,7 @@ export interface IUser {
   /**
    * 爱好
    */ likes: Array<string>
-  addrs: Array<IAddr>
+  addrs: Array<IAddress>
 }
 
 export default class User {
@@ -213,7 +212,7 @@ export default class User {
   /**
    * 爱好
    */ likes: Array<string>
-  addrs: Array<IAddr>
+  addrs: Array<IAddress>
 
   constructor(props: IUser) {
     this.id = props.id
@@ -255,12 +254,12 @@ Object {
       "name": "addrs",
       "type": Object {
         "javaType": "(function withList(val:Array<any>=[]){return java.List(val.map(v => (function withList(val:Array<any>=[]) {return java.List(val.map(v => v.__fields2java()))})(v)))})",
-        "tsType": "Array<Array<IAddr>>",
+        "tsType": "Array<Array<IAddress>>",
       },
     },
   ],
   "fullName": "org.apache.dubbo.domain.User",
-  "imports": "import  java from 'js-to-java';import {IAddr}from 'org.apache.dubbo.entity.Addr';",
+  "imports": "import  java from 'js-to-java';import {IAddress}from '../Address'",
   "infName": "IUser",
   "mott": "
       /**
@@ -279,16 +278,16 @@ exports[`e test suite test nested generic 2`] = `
  */
 
 import java from 'js-to-java'
-import { IAddr } from 'org.apache.dubbo.entity.Addr'
+import { IAddress } from '../Address'
 
 export interface IUser {
   email: Array<Array<string>>
-  addrs: Array<Array<IAddr>>
+  addrs: Array<Array<IAddress>>
 }
 
 export default class User {
   email: Array<Array<string>>
-  addrs: Array<Array<IAddr>>
+  addrs: Array<Array<IAddress>>
 
   constructor(props: IUser) {
     this.email = props.email

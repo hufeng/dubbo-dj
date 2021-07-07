@@ -13,6 +13,7 @@ export class DubboEntity extends Lang {
       fromModule: 'js-to-java',
       isDefaultModule: true,
       importModule: 'java',
+      is3rdModule: true,
     })
   }
 
