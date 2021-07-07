@@ -65,6 +65,6 @@ export default class Lang {
   }
 
   relPath(basePath: string, importPath: string) {
-    return path.relative(basePath, importPath)
+    return path.relative(basePath, importPath).replace(/\\/g, '/')
   }
 }
