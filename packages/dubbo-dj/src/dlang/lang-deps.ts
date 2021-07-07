@@ -1,4 +1,3 @@
-import path from 'path'
 import { IDepAdd, IDepValue, TFromModule } from '../types'
 
 export class Dep {
@@ -51,6 +50,6 @@ export class Dep {
   }
 
   resolveFromModule(importModule: string) {
-    return path.join(...importModule.split('.'))
+    return importModule.split('.').join('/')
   }
 }
