@@ -5,7 +5,7 @@ import { version } from './djc-version'
 import { init } from './djc-init'
 
 const program = new Command()
-//
+
 program
   .version('1.0.0')
   .description('A dsl tool that generate dubbo ecosystem code ❤️')

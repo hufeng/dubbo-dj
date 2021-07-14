@@ -1,11 +1,10 @@
 import path from 'path'
-import debug from 'debug'
 import fsx from 'fs-extra'
+import chalk from 'chalk'
 import inrequirer from 'inquirer'
 import * as code from './djc-init-code'
 
 const cwd = process.cwd()
-const log = debug(`dubbo:dj:say ~`)
 
 export async function init(dir: string) {
   const codeDir = path.join(dir || cwd, 'dubbo-dj')
@@ -24,19 +23,16 @@ export async function init(dir: string) {
     }
   }
 
-  log(`create dir [%s]`, codeDir)
+  console.log(chalk.green(`create dir ${codeDir}`))
   // create language folder
   await fsx.ensureDir(codeDir)
 
-  // create model
-  log(`create model file [%s]`, `${codeDir}/entity.ts`)
-
   for (let meta of Object.values(code)) {
     const filepath = path.join(codeDir, meta.filename)
-    console.log(filepath)
+    console.log(chalk.green(`create file ${filepath}`))
     fsx.writeFileSync(filepath, meta.code)
   }
 
-  console.log(`dubbo-dsl project init successfully`)
-  console.log(`please cd dubbo-dsl dir and install dependencies`)
+  console.log(chalk.green(`dubbo-dsl project init successfully`))
+  console.log(chalk.green(`please cd dubbo-dsl dir and install dependencies`))
 }

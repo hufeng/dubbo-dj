@@ -1,6 +1,5 @@
 import debug from 'debug'
 import EnumEmitter from '../emitter/emitter-enum'
-import { IConfigure } from '../types'
 import {
   DubboAbstractServiceEmitter,
   DubboConsumerService,
@@ -8,6 +7,7 @@ import {
   DubboServiceProviderEmitter,
 } from '../emitter'
 import { DubboEnum } from '../dlang/lang-enum'
+import { IConfigure } from '../types'
 
 const log = debug(`dubbo:dj:say ~`)
 
@@ -23,10 +23,8 @@ export async function djc(build: IConfigure) {
     },
   } = build
 
-  let {
-    lang = 'ts',
-    type = ['consumer', 'service', 'serviceImpl', 'entity'],
-  } = output
+  let { lang = 'ts', type = ['consumer', 'service', 'serviceImpl', 'entity'] } =
+    output
 
   if (typeof lang === 'string') {
     lang = [lang]
