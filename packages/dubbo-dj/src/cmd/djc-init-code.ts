@@ -45,7 +45,7 @@ export const entity = {
 }
 
 export const enumeration = {
-  filename: 'enum.js',
+  filename: 'enum.ts',
   code: fmt(`
     import {enumeration} from '@dubbo/dj'
     
@@ -75,4 +75,23 @@ export const service = {
         f.ret(t.String)
       ).ok()
 `),
+}
+
+export const tsconfig = {
+  filename: 'tsconfig.json',
+  code: fmtJSON(`{
+    "target": "es2017",
+    "module": "commonjs",
+    "strict": true,
+
+    "allowUnreachableCode": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true
+  }`),
 }
