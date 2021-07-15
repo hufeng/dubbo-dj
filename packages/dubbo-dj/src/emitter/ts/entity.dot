@@ -6,6 +6,7 @@
 export interface {{=it.infName}} {
   {{~it.fields:field}}
     {{=field.comment}}
+    {{="\n"}}
     {{=field.name}}:{{=field.type.tsType}};
     {{="\n"}}
   {{~}}
@@ -15,9 +16,10 @@ export interface {{=it.infName}} {
 {{=it.comment}}
 {{="\n\n"}}
 
-export default class {{=it.shortName}} {
+export class {{=it.shortName}} {
   {{~it.fields:field}}
     {{=field.comment}}
+    {{="\n"}}
     {{=field.name}}:{{=field.type.tsType}};
     {{="\n"}}
   {{~}}
@@ -25,7 +27,7 @@ export default class {{=it.shortName}} {
 
   constructor(props: {{=it.infName}}) {
     {{~it.fields:field}}
-      this.{{=field.name}} = props.{{=field.name}};
+      this.{{=field.name}} = {{=field.type.tsInit}} ( props.{{=field.name}});
     {{~}}
   }
 

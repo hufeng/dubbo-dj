@@ -42,7 +42,7 @@ export class ServiceBuilder {
     return this
   }
 
-  get ok() {
+  ok() {
     return this.service
   }
 }

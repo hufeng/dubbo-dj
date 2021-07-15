@@ -1,5 +1,5 @@
 import { djc } from './cmd/djc-build'
-import * as dl from './dlang'
 import * as emitter from './emitter'
+import { entity, service, enumeration, f, t } from './dlang'
 
-export { dl, emitter, djc }
+export { entity, service, enumeration, f, t, emitter, djc }

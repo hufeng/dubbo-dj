@@ -13,20 +13,33 @@ export const pkg = {
   },
   "devDependencies": {
     "ts-node": "^10.0.0",
-    "typescript":"^4.4.5"
+    "typescript":"^4.3.5"
   }
 }
 `),
 }
 
+export const index = {
+  filename: 'index.ts',
+  code: fmt(`
+    import * as entity from './entity'
+    import * as service from './service'
+
+    export {
+      entity,
+      service
+    }
+  `),
+}
+
 export const build = {
   filename: 'build.ts',
   code: fmt(`
-    import {build} from '@dubbo/dj'
+    import {djc} from '@dubbo/dj'
+    import * as entry from './index'
     
-    build({
-        entry: './index.ts',
-        output: './__gen__'
+    djc({
+        entry,
     })
 `),
 }
@@ -34,13 +47,20 @@ export const build = {
 export const entity = {
   filename: 'entity.ts',
   code: fmt(`
-  import {entity, t} from '@dubbo/dj'
+import { entity, t } from '@dubbo/dj'
 
-  export const user = entity('org.apache.dubbo.entity.User')
-      .field("id", t.Integer, '用户id')
-      .field("name", t.String, '用户名')
-      .field("age", t.int, '年龄')
-      .ok();
+export const address = entity('org.apache.dubbo.entity.Address')
+  .field('province', t.String)
+  .field('city', t.String)
+  .ok()
+
+export const user = entity('org.apache.dubbo.entity.User')
+  .field('id', t.Integer, '用户id')
+  .field('name', t.String, '用户名')
+  .field('age', t.int, '年龄')
+  .field('addr', address)
+  .field('addresses', t.List(address))
+  .ok()
 `),
 }
 
@@ -66,8 +86,8 @@ export const service = {
     export const helloService = service('org.apache.dubbo.service.UserService')
       .func(
         f.name('sayHello'),
-        f.args(f.arg(user)),
-        f.ret(t.String)
+        f.args(f.arg('user', user)),
+        f.ret(user)
       )
       .func(
         f.name('sayWorld'),

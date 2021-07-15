@@ -5,7 +5,7 @@ import { DubboEnum } from '../dlang/lang-enum'
 export default class DubboEnumEmitter extends Emitter {
   constructor(
     public e: DubboEnum,
-    lang: 'ts' | 'go' | 'java',
+    lang: 'ts' | 'go' | 'java' | 'swagger',
     baseDir: string = './dubbo'
   ) {
     super(e.fullName, lang, baseDir)

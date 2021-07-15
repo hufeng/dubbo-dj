@@ -1,13 +1,13 @@
 import DubboEnumEmitter from './emitter-enum'
 import DubboEntityEmitter from './emitter-entity'
-import DubboServiceProviderEmitter from './emitter-provider-service'
+import DubboServiceEmitter from './emitter-service'
 import DubboAbstractServiceEmitter from './emitter-abstract-service'
-import DubboConsumerService from './emitter-consumer-service'
+import DubboConsumerServiceEmitter from './emitter-consumer-service'
 
 export {
   DubboEnumEmitter,
   DubboEntityEmitter,
-  DubboConsumerService,
-  DubboServiceProviderEmitter,
+  DubboServiceEmitter,
+  DubboConsumerServiceEmitter,
   DubboAbstractServiceEmitter,
 }

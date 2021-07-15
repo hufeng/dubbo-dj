@@ -12,6 +12,7 @@ Object {
       "name": "id",
       "type": Object {
         "javaType": "java.Integer",
+        "tsInit": "",
         "tsType": "number",
       },
     },
@@ -23,6 +24,7 @@ Object {
       "name": "name",
       "type": Object {
         "javaType": "java.String",
+        "tsInit": "",
         "tsType": "string",
       },
     },
@@ -34,6 +36,7 @@ Object {
       "name": "email",
       "type": Object {
         "javaType": "java.String",
+        "tsInit": "",
         "tsType": "string",
       },
     },
@@ -41,13 +44,14 @@ Object {
       "comment": "",
       "name": "color",
       "type": Object {
-        "javaType": "((v:any) => java.enum('org.apache.dubbo.domain.enum.Color', Color[v]))",
+        "javaType": "((v:Color) => java.enum('org.apache.dubbo.domain.enum.Color', Color[v]))",
+        "tsInit": "",
         "tsType": "Color",
       },
     },
   ],
   "fullName": "org.apache.dubbo.domain.User",
-  "imports": "import  java from 'js-to-java';import {Color}from '../enum/Color'",
+  "imports": "import  java from 'js-to-java';import {Color,IColor}from './enum/Color'",
   "infName": "IUser",
   "mott": "
       /**
@@ -66,35 +70,43 @@ exports[`e test suite test basic e 2`] = `
  */
 
 import java from 'js-to-java'
-import { Color } from '../enum/Color'
+import { Color, IColor } from './enum/Color'
 
 export interface IUser {
   /**
    * 用户id
-   */ id: number
+   */
+  id: number
 
   /**
    * 用户名
-   */ name: string
+   */
+  name: string
 
   /**
    * 邮箱
-   */ email: string
+   */
+  email: string
+
   color: Color
 }
 
-export default class User {
+export class User {
   /**
    * 用户id
-   */ id: number
+   */
+  id: number
 
   /**
    * 用户名
-   */ name: string
+   */
+  name: string
 
   /**
    * 邮箱
-   */ email: string
+   */
+  email: string
+
   color: Color
 
   constructor(props: IUser) {
@@ -109,7 +121,7 @@ export default class User {
       id: java.Integer(this.id),
       name: java.String(this.name),
       email: java.String(this.email),
-      color: ((v: any) =>
+      color: ((v: Color) =>
         java.enum('org.apache.dubbo.domain.enum.Color', Color[v]))(this.color),
     })
   }
@@ -129,6 +141,7 @@ Object {
       "name": "id",
       "type": Object {
         "javaType": "java.Integer",
+        "tsInit": "",
         "tsType": "number",
       },
     },
@@ -140,6 +153,7 @@ Object {
       "name": "name",
       "type": Object {
         "javaType": "java.String",
+        "tsInit": "",
         "tsType": "string",
       },
     },
@@ -150,7 +164,8 @@ Object {
     */",
       "name": "likes",
       "type": Object {
-        "javaType": "(function withList(val:Array<any>=[]){return java.List(val.map(v => java.String(v)))})",
+        "javaType": "((val:Array<string>=[]) => java.List(val.map(v => java.String(v))))",
+        "tsInit": "",
         "tsType": "Array<string>",
       },
     },
@@ -158,13 +173,14 @@ Object {
       "comment": "",
       "name": "addrs",
       "type": Object {
-        "javaType": "(function withList(val:Array<any>=[]) {return java.List(val.map(v => v.__fields2java()))})",
+        "javaType": "((list:Array<IAddress>=[]) => java.List(list.map(v => new Address(v).__fields2java())))",
+        "tsInit": "((list:Array<IAddress>) => list.map(v => new Address(v)))",
         "tsType": "Array<IAddress>",
       },
     },
   ],
   "fullName": "org.apache.dubbo.domain.User",
-  "imports": "import  java from 'js-to-java';import {IAddress}from '../Address'",
+  "imports": "import  java from 'js-to-java';import {IAddress}from './Address'",
   "infName": "IUser",
   "mott": "
       /**
@@ -183,54 +199,62 @@ exports[`e test suite test first-level list 2`] = `
  */
 
 import java from 'js-to-java'
-import { IAddress } from '../Address'
+import { IAddress } from './Address'
 
 export interface IUser {
   /**
    * 用户id
-   */ id: number
+   */
+  id: number
 
   /**
    * 用户名
-   */ name: string
+   */
+  name: string
 
   /**
    * 爱好
-   */ likes: Array<string>
+   */
+  likes: Array<string>
+
   addrs: Array<IAddress>
 }
 
-export default class User {
+export class User {
   /**
    * 用户id
-   */ id: number
+   */
+  id: number
 
   /**
    * 用户名
-   */ name: string
+   */
+  name: string
 
   /**
    * 爱好
-   */ likes: Array<string>
+   */
+  likes: Array<string>
+
   addrs: Array<IAddress>
 
   constructor(props: IUser) {
     this.id = props.id
     this.name = props.name
     this.likes = props.likes
-    this.addrs = props.addrs
+    this.addrs = ((list: Array<IAddress>) => list.map((v) => new Address(v)))(
+      props.addrs
+    )
   }
 
   __fields2java() {
     return java('org.apache.dubbo.domain.User', {
       id: java.Integer(this.id),
       name: java.String(this.name),
-      likes: (function withList(val: Array<any> = []) {
-        return java.List(val.map((v) => java.String(v)))
-      })(this.likes),
-      addrs: (function withList(val: Array<any> = []) {
-        return java.List(val.map((v) => v.__fields2java()))
-      })(this.addrs),
+      likes: ((val: Array<string> = []) =>
+        java.List(val.map((v) => java.String(v))))(this.likes),
+      addrs: ((list: Array<IAddress> = []) =>
+        java.List(list.map((v) => new Address(v).__fields2java())))(this.addrs),
     })
   }
 }
@@ -245,7 +269,8 @@ Object {
       "comment": "",
       "name": "email",
       "type": Object {
-        "javaType": "(function withList(val:Array<any>=[]){return java.List(val.map(v => (function withList(val:Array<any>=[]){return java.List(val.map(v => java.String(v)))})(v)))})",
+        "javaType": "((val:Array<Array<string>>=[]) => java.List(val.map(v => ((val:Array<string>=[]) => java.List(val.map(v => java.String(v))))(v))))",
+        "tsInit": "",
         "tsType": "Array<Array<string>>",
       },
     },
@@ -253,13 +278,14 @@ Object {
       "comment": "",
       "name": "addrs",
       "type": Object {
-        "javaType": "(function withList(val:Array<any>=[]){return java.List(val.map(v => (function withList(val:Array<any>=[]) {return java.List(val.map(v => v.__fields2java()))})(v)))})",
+        "javaType": "((val:Array<Array<IAddress>>=[]) => java.List(val.map(v => ((list:Array<IAddress>=[]) => java.List(list.map(v => new Address(v).__fields2java())))(v))))",
+        "tsInit": "",
         "tsType": "Array<Array<IAddress>>",
       },
     },
   ],
   "fullName": "org.apache.dubbo.domain.User",
-  "imports": "import  java from 'js-to-java';import {IAddress}from '../Address'",
+  "imports": "import  java from 'js-to-java';import {IAddress}from './Address'",
   "infName": "IUser",
   "mott": "
       /**
@@ -278,15 +304,17 @@ exports[`e test suite test nested generic 2`] = `
  */
 
 import java from 'js-to-java'
-import { IAddress } from '../Address'
+import { IAddress } from './Address'
 
 export interface IUser {
   email: Array<Array<string>>
+
   addrs: Array<Array<IAddress>>
 }
 
-export default class User {
+export class User {
   email: Array<Array<string>>
+
   addrs: Array<Array<IAddress>>
 
   constructor(props: IUser) {
@@ -296,24 +324,20 @@ export default class User {
 
   __fields2java() {
     return java('org.apache.dubbo.domain.User', {
-      email: (function withList(val: Array<any> = []) {
-        return java.List(
+      email: ((val: Array<Array<string>> = []) =>
+        java.List(
           val.map((v) =>
-            (function withList(val: Array<any> = []) {
-              return java.List(val.map((v) => java.String(v)))
-            })(v)
+            ((val: Array<string> = []) =>
+              java.List(val.map((v) => java.String(v))))(v)
           )
-        )
-      })(this.email),
-      addrs: (function withList(val: Array<any> = []) {
-        return java.List(
+        ))(this.email),
+      addrs: ((val: Array<Array<IAddress>> = []) =>
+        java.List(
           val.map((v) =>
-            (function withList(val: Array<any> = []) {
-              return java.List(val.map((v) => v.__fields2java()))
-            })(v)
+            ((list: Array<IAddress> = []) =>
+              java.List(list.map((v) => new Address(v).__fields2java())))(v)
           )
-        )
-      })(this.addrs),
+        ))(this.addrs),
     })
   }
 }

@@ -1,6 +1,7 @@
 {{=it.mott}}
 
 {{="\n\n"}}
+import java from 'js-to-java';
 {{=it.imports}}
 {{="\n\n"}}
 
@@ -33,7 +34,7 @@ export default abstract class {{=it.shortName}} {
   {{="\n\n"}}
 
   {{~it.funcs:method}}
-    abstract async {{=method.name}}(
+    abstract {{=method.name}}(
       {{~method.args:arg}}
       {{=arg.name}}:{{=arg.type.tsType}},
     {{~}}

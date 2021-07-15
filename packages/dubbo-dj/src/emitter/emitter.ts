@@ -6,22 +6,25 @@ const FILE_EXT = {
   ts: 'ts',
   go: 'go',
   java: 'java',
+  swagger: 'html',
 }
 const log = debug(`dj:emitter：say ~`)
 
 export default abstract class Emitter {
-  protected readonly genFilePath: string
+  protected baseDir: string
+  protected genFilePath: string
   private readonly fullName: string
 
   protected constructor(
     fullName: string,
-    lang: 'ts' | 'go' | 'java' = 'ts',
-    baseDir: string = './dubbo'
+    lang: 'ts' | 'go' | 'java' | 'swagger' = 'ts',
+    rootDir: string = './dubbo'
   ) {
     this.fullName = fullName
-    const fileExt = FILE_EXT[lang]
+    const fileExt = this.fileExt(lang)
     const pkgDir = this.dotPath(fullName)
-    this.genFilePath = `${baseDir}/${lang}/${pkgDir}.${fileExt}`
+    this.baseDir = `${rootDir}/`
+    this.genFilePath = `${pkgDir}.${fileExt}`
   }
 
   dotPath(cls: string) {
@@ -30,14 +33,19 @@ export default abstract class Emitter {
 
   // write to => ./dubbo/ts/**/*.ts
   async writeCode(): Promise<void> {
+    const fullFilePath = this.baseDir + this.genFilePath
     try {
-      await fsx.ensureFile(this.genFilePath)
-      await fsx.writeFile(this.genFilePath, this.prettyCode)
-      log('create %s => %s was successfully', this.fullName, this.genFilePath)
+      await fsx.ensureFile(fullFilePath)
+      await fsx.writeFile(fullFilePath, this.prettyCode)
+      log('create %s => %s was successfully', this.fullName, fullFilePath)
     } catch (err) {
       log('write file error %s', err)
       console.error(err)
     }
+  }
+
+  fileExt(lang: 'ts' | 'java' | 'go' | 'swagger'): string {
+    return FILE_EXT[lang]
   }
 
   get prettyCode(): string {

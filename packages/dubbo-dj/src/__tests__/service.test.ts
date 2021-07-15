@@ -2,12 +2,12 @@ import { entity, service, t } from '../dlang'
 import { f } from '../dlang'
 import {
   DubboAbstractServiceEmitter,
-  DubboConsumerService,
-  DubboServiceProviderEmitter,
+  DubboConsumerServiceEmitter,
+  DubboServiceEmitter,
 } from '../emitter'
 
 describe('test s lang suite', () => {
-  it('test baisc s', () => {
+  it('test basic s', () => {
     const addr = entity('org.apache.dubbo.domain.Address')
       .field('id', t.Integer, '地址id')
       .field('province', t.String, '省')
@@ -24,18 +24,19 @@ describe('test s lang suite', () => {
         f.name('sayWorld'),
         f.args(f.arg('name', t.List(t.String)), f.arg('addr', t.List(addr))),
         f.ret(t.List(t.Integer))
-      ).ok
+      )
+      .ok()
 
     expect(helloService).toMatchSnapshot()
     expect(
-      new DubboServiceProviderEmitter(helloService, 'ts').prettyCode
+      new DubboServiceEmitter(helloService, 'ts').prettyCode
     ).toMatchSnapshot()
 
     expect(
       new DubboAbstractServiceEmitter(helloService, 'ts').prettyCode
     ).toMatchSnapshot()
     expect(
-      new DubboConsumerService(helloService, 'ts').prettyCode
+      new DubboConsumerServiceEmitter(helloService, 'ts').prettyCode
     ).toMatchSnapshot()
   })
 })

@@ -17,9 +17,15 @@ export function universalType(dep: Dep, type: TDataType) {
       fromModule: type.fullName,
       importModule: type.shortName,
     })
+    dep.add({
+      is3rdModule: false,
+      fromModule: type.fullName,
+      importModule: type.infName,
+    })
     return {
       tsType: type.infName,
-      javaType: `((v:any) => v.__fields2java())`,
+      tsInit: `new ${type.shortName}`,
+      javaType: `((v:${type.infName}) => new ${type.shortName}(v).__fields2java())`,
     }
   } else if (type instanceof DubboEnum) {
     dep.add({
@@ -27,12 +33,20 @@ export function universalType(dep: Dep, type: TDataType) {
       fromModule: type.fullName,
       importModule: type.shortName,
     })
+    dep.add({
+      is3rdModule: false,
+      fromModule: type.fullName,
+      importModule: type.infName,
+    })
     return {
       tsType: type.shortName,
-      javaType: `((v:any) => java.enum('${type.fullName}', ${type.shortName}[v]))`,
+      tsInit: '',
+      javaType: `((v:${type.shortName}) => java.enum('${type.fullName}', ${type.shortName}[v]))`,
     }
   } else {
-    return type(dep)
+    const t = type(dep)
+    t.tsInit = t.tsInit || ''
+    return t
   }
 }
 
@@ -175,7 +189,7 @@ export function Character(): IType {
 // ~~~~~~~~~~~~~~~~~~~~~ container ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export function List(type: TDataType): (() => IType) | ((dep: Dep) => IType) {
   if (type instanceof DubboEntity) {
-    const { infName } = type
+    const { infName, shortName } = type
     return (dep: Dep) => {
       dep.add({
         is3rdModule: false,
@@ -184,7 +198,8 @@ export function List(type: TDataType): (() => IType) | ((dep: Dep) => IType) {
       })
       return {
         tsType: `Array<${infName}>`,
-        javaType: `(function withList(val:Array<any>=[]) {return java.List(val.map(v => v.__fields2java()))})`,
+        tsInit: `((list:Array<${infName}>) => list.map(v => new ${shortName}(v)))`,
+        javaType: `((list:Array<${infName}>=[]) => java.List(list.map(v => new ${shortName}(v).__fields2java())))`,
       }
     }
   }
@@ -208,7 +223,7 @@ export function List(type: TDataType): (() => IType) | ((dep: Dep) => IType) {
     const t = type(dep)
     return {
       tsType: `Array<${t.tsType}>`,
-      javaType: `(function withList(val:Array<any>=[]){return java.List(val.map(v => ${t.javaType}(v)))})`,
+      javaType: `((val:Array<${t.tsType}>=[]) => java.List(val.map(v => ${t.javaType}(v))))`,
     }
   }
 }

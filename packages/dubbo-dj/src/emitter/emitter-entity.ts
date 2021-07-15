@@ -8,7 +8,7 @@ const log = debug(`dj:entity-emitter:say ~`)
 export default class DubboEntityEmitter extends Emitter {
   constructor(
     public e: DubboEntity,
-    lang: 'ts' | 'go' | 'java',
+    lang: 'ts' | 'go' | 'java' | 'swagger',
     baseDir: string = './dubbo'
   ) {
     super(e.fullName, lang, baseDir)

@@ -1,17 +1,17 @@
 {{=it.mott}}
 
 {{="\n\n"}}
-  import {Dubbo, TDubboCallResult} from 'apache-dubbo-js';
+  import {Dubbo, TDubboCallResult, java} from '@dubbo/dubbo-consumer';
   {{=it.imports}}
 {{="\n\n"}}
 
 export interface {{=it.infName}} {
-  {{~it.methods:method}}
-    {{=method.name}}(
-      {{~method.args:arg}}
+  {{~it.funcs:f}}
+    {{=f.name}}(
+      {{~f.args:arg}}
         {{=arg.name}}:{{=arg.type.tsType}},
       {{~}}
-    ): TDubboCallResult<{{=method.ret.tsType}}>,
+    ): TDubboCallResult<{{=f.ret.tsType}}>,
   {{~}}
 }
 
@@ -22,15 +22,15 @@ export function {{=it.shortName}}(dubbo: Dubbo): {{=it.infName}}{
  return dubbo.proxyService<{{=it.infName}}>({
     dubboInterface: '{{=it.fullName}}',
     methods: {
-      {{~it.funcs:method}}
-        {{=method.name}}(
-          {{~method.args:arg}}
+      {{~it.funcs:f}}
+        {{=f.name}}(
+          {{~f.args:arg}}
             {{=arg.name}}:{{=arg.type.tsType}},
           {{~}}
-        ):any{
+        ){
           return [
-            {{~method.args:arg}}
-              {{=arg.name}},
+            {{~f.args:arg}}
+              {{=arg.type.javaType}}({{=arg.name}}),
             {{~}}
           ]
         },

@@ -6,13 +6,14 @@ import { DubboService } from '../dlang/lang-service'
 
 const log = debug(`dj:provider:say ~`)
 
-export default class DubboServiceProviderEmitter extends Emitter {
+export default class DubboServiceEmitter extends Emitter {
   constructor(
     public s: DubboService,
-    lang: 'ts' | 'go' | 'java',
-    baseDir: string = './dubbo'
+    lang: 'ts' | 'go' | 'java' | 'swagger',
+    rootDir: string = './dubbo'
   ) {
-    super(s.fullName, lang, baseDir)
+    super(s.fullName, lang, rootDir)
+    this.baseDir += 'service/'
   }
 
   async writeCode(): Promise<void> {

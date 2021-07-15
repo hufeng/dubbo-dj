@@ -64,7 +64,13 @@ export default class Lang {
     return buff.join('')
   }
 
-  relPath(basePath: string, importPath: string) {
-    return path.relative(basePath, importPath).replace(/\\/g, '/')
+  relPath(baseModule: string, importModule: string) {
+    const lastSlash = baseModule.lastIndexOf('/')
+    const baseDir = baseModule.substring(0, lastSlash)
+    let relPath = path.relative(baseDir, importModule).replace(/\\/g, '/')
+    if (!relPath.startsWith('.')) {
+      relPath = './' + relPath
+    }
+    return relPath
   }
 }

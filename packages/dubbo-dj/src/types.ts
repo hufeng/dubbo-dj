@@ -43,6 +43,7 @@ export interface IDubboEnumFiled {
 
 export interface IType {
   tsType: string
+  tsInit?: string
   javaType: string
 }
 
@@ -68,21 +69,13 @@ export interface IMethodMeta {
 }
 
 export interface IConfigure {
-  buildEntry: {
-    entity: {
-      [k in string]: DubboEntity
-    }
-    service: {
-      [k in string]: DubboService
-    }
+  entry: {
+    entity: { [name: string]: DubboEntity | DubboEnum }
+    service: { [name: string]: DubboService }
   }
   output?: {
-    lang?: Array<'ts' | 'java' | 'go'> | 'ts' | 'java' | 'go'
-    type?:
-      | Array<'consumer' | 'service' | 'serviceImpl' | 'entity'>
-      | 'consumer'
-      | 'service'
-      | 'serviceImpl'
-      | 'entity'
+    langs?: Array<'ts' | 'java' | 'go' | 'swagger'>
+    types?: Array<'consumer' | 'service' | 'serviceImpl' | 'entity'>
+    dir?: string
   }
 }
